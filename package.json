@@ -9,7 +9,7 @@
     "dev:server": "tsx watch --tsconfig tsconfig.server.json server/index.ts",
     "build": "vite build",
     "build:server": "npm install && tsc --project tsconfig.server.json",
-    "start": "node dist/index.js",
+    "start": "node server-dist/index.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
