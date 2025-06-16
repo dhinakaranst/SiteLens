@@ -15,23 +15,40 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Store active analysis sessions
+const activeAnalyses = new Map<string, { progress: any; clients: Set<any> }>();
+
 // Configure CORS to explicitly allow requests only from your deployed frontend domain
 const allowedOrigins = [
-  'http://localhost:5173', // Keep this for local frontend development
-  'https://your-netlify-frontend-domain.netlify.app' // <<< IMPORTANT: REPLACE THIS
+  'http://localhost:5173', // Keep this for local development
+  'http://localhost:3000', // Keep this for local development
+  'https://seo-audit-tool.vercel.app', // Add your Vercel frontend URL
+  'https://*.vercel.app' // Allow all Vercel preview deployments
 ];
 
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+  origin: function(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    // Allow requests with no origin (like mobile apps, curl, postman)
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.some(allowedOrigin => 
+      origin === allowedOrigin || 
+      (allowedOrigin.includes('*') && origin.endsWith(allowedOrigin.split('*')[1]))
+    )) {
       callback(null, true);
     } else {
+      console.log('Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
-  }
+  },
+  credentials: true, // Allow credentials (cookies, authorization headers, etc)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-app.use(cors(corsOptions)); // Apply the restricted CORS options
+app.use(cors(corsOptions));
 app.use(express.json());
 
 interface SEOReport {
@@ -98,30 +115,100 @@ async function generateAiRecommendations(report: SEOReport): Promise<string[]> {
   }
 }
 
+// Progress tracking endpoint
+app.get('/api/audit/progress', (req, res) => {
+  const url = req.query.url as string;
+  if (!url) {
+    return res.status(400).json({ error: 'URL is required' });
+  }
+
+  // Set headers for SSE
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  // Create a unique ID for this client
+  const clientId = Date.now().toString();
+  
+  // Initialize or get the analysis session
+  if (!activeAnalyses.has(url)) {
+    activeAnalyses.set(url, { progress: { stage: 'initial', message: 'Starting analysis...' }, clients: new Set() });
+  }
+  
+  const session = activeAnalyses.get(url)!;
+  session.clients.add(res);
+
+  // Send initial progress
+  res.write(`data: ${JSON.stringify(session.progress)}\n\n`);
+
+  // Handle client disconnect
+  req.on('close', () => {
+    session.clients.delete(res);
+    if (session.clients.size === 0) {
+      activeAnalyses.delete(url);
+    }
+  });
+});
+
+// Helper function to broadcast progress to all clients
+const broadcastProgress = (url: string, progress: any) => {
+  const session = activeAnalyses.get(url);
+  if (session) {
+    session.progress = progress;
+    session.clients.forEach(client => {
+      client.write(`data: ${JSON.stringify(progress)}\n\n`);
+    });
+  }
+};
+
 // Existing full audit endpoint
 app.post('/api/audit', async (req, res) => {
+  const { url } = req.body;
+  
+  if (!url) {
+    return res.status(400).json({ error: 'URL is required' });
+  }
+
+  // Validate URL format
+  const urlPattern = /^https?:\/\/.+/;
+  if (!urlPattern.test(url)) {
+    return res.status(400).json({ error: 'Invalid URL format. Please include http:// or https://' });
+  }
+
   try {
-    const { url } = req.body;
-    
-    if (!url) {
-      return res.status(400).json({ error: 'URL is required' });
+    // Initialize analysis session if not exists
+    if (!activeAnalyses.has(url)) {
+      activeAnalyses.set(url, { progress: { stage: 'initial', message: 'Starting analysis...' }, clients: new Set() });
     }
 
-    // Validate URL format
-    const urlPattern = /^https?:\/\/.+/;
-    if (!urlPattern.test(url)) {
-      return res.status(400).json({ error: 'Invalid URL format. Please include http:// or https://' });
-    }
-
-    const report = await analyzeWebsite(url);
+    // Update progress for fetching stage
+    broadcastProgress(url, { stage: 'fetching', message: 'Fetching website content...' });
     
-    // Generate AI recommendations and add them to the report
+    // Start the analysis with progress updates
+    const report = await analyzeWebsite(url, (progress) => {
+      broadcastProgress(url, progress);
+    });
+    
+    // Generate AI recommendations with progress updates
+    broadcastProgress(url, { stage: 'ai', message: 'Generating AI recommendations...' });
     const aiRecs = await generateAiRecommendations(report);
     const finalReport = { ...report, aiRecommendations: aiRecs };
+
+    // Mark as complete
+    broadcastProgress(url, { stage: 'complete', message: 'Analysis complete!' });
+    
+    // Clean up the session after a delay
+    setTimeout(() => {
+      activeAnalyses.delete(url);
+    }, 5000);
 
     res.json(finalReport);
   } catch (error) {
     console.error('Audit error:', error);
+    broadcastProgress(url, { 
+      stage: 'error', 
+      message: error instanceof Error ? error.message : 'An unexpected error occurred' 
+    });
     res.status(500).json({ 
       error: 'Failed to analyze website',
       details: error instanceof Error ? error.message : 'Unknown error'

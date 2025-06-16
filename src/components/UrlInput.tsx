@@ -65,6 +65,8 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
           </div>
           <input
             type="text"
+            id="website-url"
+            name="website-url"
             value={url}
             onChange={(e) => {
               setUrl(e.target.value);
@@ -75,11 +77,13 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
               error ? 'border-red-300' : 'border-gray-200'
             }`}
             disabled={isLoading}
+            aria-label="Website URL"
+            aria-describedby={error ? "url-error" : undefined}
           />
         </div>
         
         {error && (
-          <p className="text-red-600 text-sm mt-2 px-1">{error}</p>
+          <p id="url-error" className="text-red-600 text-sm mt-2 px-1">{error}</p>
         )}
 
         <button
