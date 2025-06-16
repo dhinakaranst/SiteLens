@@ -22,6 +22,7 @@ const activeAnalyses = new Map<string, { progress: any; clients: Set<any> }>();
 const allowedOrigins = [
   'http://localhost:5173', // Keep this for local development
   'http://localhost:3000', // Keep this for local development
+  'https://sitelens.netlify.app', // Add your Netlify frontend URL
   'https://seo-audit-tool.vercel.app', // Add your Vercel frontend URL
   'https://*.vercel.app' // Allow all Vercel preview deployments
 ];
