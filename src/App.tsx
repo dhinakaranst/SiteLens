@@ -92,6 +92,11 @@ function App() {
       <div className="w-full max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
+          <img 
+            src="/sitelens_logo.png" 
+            alt="SiteLens Logo" 
+            className="mx-auto mb-4 h-24 w-auto"
+          />
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             SEO Analysis Tools
           </h1>
