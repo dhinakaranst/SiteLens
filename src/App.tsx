@@ -6,6 +6,7 @@ import { HeadingsAnalyzer } from './components/HeadingsAnalyzer';
 import { SocialTagsChecker } from './components/SocialTagsChecker';
 import { useSEOAnalysis } from './hooks/useSEOAnalysis';
 import { AlertCircle, Search, Hash, FileText, Share2 } from 'lucide-react';
+import sitelensLogo from './assets/sitelens_logo.png';
 
 type ActiveTool = 'full-audit' | 'meta-checker' | 'headings-analyzer' | 'social-tags';
 
@@ -93,7 +94,7 @@ function App() {
         {/* Header */}
         <div className="text-center mb-8">
           <img 
-            src="/sitelens_logo.png" 
+            src={sitelensLogo}
             alt="SiteLens Logo" 
             className="mx-auto mb-4 h-24 w-auto"
           />
