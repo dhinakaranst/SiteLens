@@ -6,6 +6,7 @@ import { checkMeta } from './routes/meta-check.js';
 import { analyzeHeadings } from './routes/headings.js';
 import { checkSocialTags } from './routes/social-tags.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from 'axios';
 
 dotenv.config();
 
@@ -17,6 +18,38 @@ const PORT = process.env.PORT || 3001;
 
 // Store active analysis sessions
 const activeAnalyses = new Map<string, { progress: any; clients: Set<any> }>();
+
+// Keep-alive mechanism for Render free tier
+const keepAlive = async () => {
+  try {
+    // Try to determine the base URL
+    let baseUrl = process.env.RENDER_EXTERNAL_URL;
+    
+    if (!baseUrl) {
+      // If not on Render, try to get from request headers or use localhost
+      baseUrl = `http://localhost:${PORT}`;
+    }
+    
+    const response = await axios.get(`${baseUrl}/health`, {
+      timeout: 5000,
+      headers: {
+        'User-Agent': 'SEO-Audit-KeepAlive/1.0'
+      }
+    });
+    console.log(`✅ Keep-alive ping successful: ${response.status}`);
+  } catch (error) {
+    console.log('⚠️ Keep-alive ping failed:', error instanceof Error ? error.message : 'Unknown error');
+  }
+};
+
+// Start keep-alive ping every 14 minutes (Render spins down after 15 minutes)
+if (process.env.NODE_ENV === 'production' || process.env.RENDER_EXTERNAL_URL) {
+  setInterval(keepAlive, 14 * 60 * 1000); // 14 minutes
+  console.log('🔄 Keep-alive mechanism enabled');
+  
+  // Also ping immediately on startup
+  setTimeout(keepAlive, 5000);
+}
 
 // Configure CORS to explicitly allow requests only from your deployed frontend domain
 const allowedOrigins = [
@@ -299,6 +332,33 @@ app.get('/healthz', (req, res) => {
 
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Wake-up endpoint to prevent spinning down
+app.get('/wake', (req, res) => {
+  console.log('🌅 Server woken up by external request');
+  res.json({ 
+    status: 'awake', 
+    timestamp: new Date().toISOString(),
+    message: 'Server is active and ready to handle requests'
+  });
+});
+
+// Root endpoint for basic connectivity test
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'SEO Audit API is running',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    endpoints: [
+      'POST /api/audit - Full SEO audit',
+      'POST /api/meta-check - Meta title & description checker', 
+      'POST /api/headings - Headings analyzer',
+      'POST /api/social-tags - Social media tags checker',
+      'GET /health - Health check',
+      'GET /wake - Wake up server'
+    ]
+  });
 });
 
 app.listen(PORT, () => {

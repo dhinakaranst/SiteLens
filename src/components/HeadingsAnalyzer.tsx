@@ -68,7 +68,13 @@ export const HeadingsAnalyzer: React.FC = () => {
       setResult(response.data);
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.error || err.message);
+        if (err.response?.status === 404) {
+          setError('Server is starting up. Please wait a moment and try again. This can take up to 50 seconds on the free tier.');
+        } else if (err.response?.status === 503 || err.response?.status === 502) {
+          setError('Server is temporarily unavailable. Please try again in a few moments.');
+        } else {
+          setError(err.response?.data?.error || err.message);
+        }
       } else {
         setError('An unexpected error occurred');
       }
