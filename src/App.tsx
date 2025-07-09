@@ -91,54 +91,58 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 py-8">
       <div className="w-full max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
+        {/* Top Navigation Bar */}
+        <nav className="flex items-center mb-8 px-2">
           <img 
             src={sitelensLogo}
-            alt="SiteLens Logo" 
-            className="mx-auto mb-4 h-24 w-auto"
+            alt="SEO SiteLens Logo - Website SEO Analyzer" 
+            className="h-24 w-auto mr-8 mt-2"
           />
+          <div className="flex gap-2 ml-auto">
+            <a href="/features" className="px-4 py-2 rounded-lg bg-white text-blue-700 font-semibold shadow hover:bg-blue-50 transition">SEO Features</a>
+            <a href="/contact" className="px-4 py-2 rounded-lg bg-white text-blue-700 font-semibold shadow hover:bg-blue-50 transition">Contact Us</a>
+            <a href="https://developers.google.com/search/docs/fundamentals/seo-starter-guide" target="_blank" rel="noopener" className="px-4 py-2 rounded-lg bg-white text-blue-700 font-semibold shadow hover:bg-blue-50 transition">Google SEO Starter Guide</a>
+            <a href="https://moz.com/learn/seo/what-is-seo" target="_blank" rel="noopener" className="px-4 py-2 rounded-lg bg-white text-blue-700 font-semibold shadow hover:bg-blue-50 transition">Moz: What is SEO?</a>
+          </div>
+        </nav>
+        {/* Header */}
+        <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            SEO Analysis Tools
+            Comprehensive SEO Audit & Optimization Tool
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Comprehensive SEO analysis tools to optimize your website's search engine performance
           </p>
         </div>
 
-        {/* Tool Selector */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {tools.map((tool) => {
-            const Icon = tool.icon;
-            const isActive = activeTool === tool.id;
-            return (
-              <button
-                key={tool.id}
-                onClick={() => setActiveTool(tool.id)}
-                className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${
-                  isActive 
-                    ? 'border-transparent shadow-lg transform scale-105' 
-                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                } ${getColorClasses(tool.color, isActive)}`}
-              >
-                <div className="flex items-center space-x-3 mb-2">
-                  <Icon className="w-6 h-6" />
-                  <h3 className="font-semibold">{tool.name}</h3>
-                </div>
-                <p className={`text-sm ${isActive ? 'text-white/90' : 'opacity-75'}`}>
-                  {tool.description}
-                </p>
-              </button>
-            );
-          })}
+        {/* Hero Section */}
+        <div className="text-center mb-6">
+          <h1 className="text-5xl font-extrabold text-gray-900 mb-3">SEO Audit. Instantly.</h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">Analyze and optimize your website’s SEO in seconds.</p>
         </div>
-
-        {/* Active Tool Content */}
-        <div className="w-full">
+        {/* Tool Selector - 2x2 grid, tighter spacing */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 max-w-xl mx-auto">
+          <button
+            onClick={() => setActiveTool('full-audit')}
+            className={`p-4 rounded-xl border-2 font-semibold text-lg transition-all duration-200 text-left ${activeTool === 'full-audit' ? 'bg-blue-600 text-white border-transparent shadow-lg scale-105' : 'bg-white text-blue-700 border-gray-200 hover:border-blue-300 hover:shadow-md'}`}
+          >Audit Website</button>
+          <button
+            onClick={() => setActiveTool('meta-checker')}
+            className={`p-4 rounded-xl border-2 font-semibold text-lg transition-all duration-200 text-left ${activeTool === 'meta-checker' ? 'bg-green-600 text-white border-transparent shadow-lg scale-105' : 'bg-white text-green-700 border-gray-200 hover:border-green-300 hover:shadow-md'}`}
+          >Meta Checker</button>
+          <button
+            onClick={() => setActiveTool('headings-analyzer')}
+            className={`p-4 rounded-xl border-2 font-semibold text-lg transition-all duration-200 text-left ${activeTool === 'headings-analyzer' ? 'bg-purple-600 text-white border-transparent shadow-lg scale-105' : 'bg-white text-purple-700 border-gray-200 hover:border-purple-300 hover:shadow-md'}`}
+          >Heading Audit</button>
+          <button
+            onClick={() => setActiveTool('social-tags')}
+            className={`p-4 rounded-xl border-2 font-semibold text-lg transition-all duration-200 text-left ${activeTool === 'social-tags' ? 'bg-pink-600 text-white border-transparent shadow-lg scale-105' : 'bg-white text-pink-700 border-gray-200 hover:border-pink-300 hover:shadow-md'}`}
+          >Social Tags</button>
+        </div>
+        {/* Active Tool Content - form stays centered and simple */}
+        <div className="w-full flex justify-center">
           {activeTool === 'full-audit' && (
-            <div className="flex items-center justify-center">
-              <UrlInput onAnalyze={analyzeWebsite} isLoading={isLoading} />
-            </div>
+            <UrlInput onAnalyze={analyzeWebsite} isLoading={isLoading} placeholder="Enter website URL (e.g., https://yourdomain.com)" />
           )}
           {activeTool === 'meta-checker' && <MetaChecker />}
           {activeTool === 'headings-analyzer' && <HeadingsAnalyzer />}

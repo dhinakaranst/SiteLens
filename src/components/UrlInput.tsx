@@ -6,7 +6,7 @@ interface UrlInputProps {
   isLoading: boolean;
 }
 
-export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
+export const UrlInput: React.FC<UrlInputProps & { placeholder?: string }> = ({ onAnalyze, isLoading, placeholder }) => {
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
 
@@ -72,8 +72,8 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
               setUrl(e.target.value);
               setError('');
             }}
-            placeholder="Enter website URL (e.g., example.com or https://example.com)"
-            className={`block w-full pl-12 pr-4 py-4 text-lg border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 ${
+            placeholder={placeholder || "Enter website URL (e.g., example.com or https://example.com)"}
+            className={`block w-full pl-12 pr-4 py-4 text-lg border-2 rounded-2xl shadow-sm focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white ${
               error ? 'border-red-300' : 'border-gray-200'
             }`}
             disabled={isLoading}
@@ -89,7 +89,7 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-2xl shadow-lg transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-blue-500/30"
         >
           {isLoading ? (
             <>
