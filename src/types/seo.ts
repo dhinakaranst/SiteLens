@@ -45,4 +45,5 @@ export interface SEOReport {
   };
   seoScore: number;
   recommendations: string[];
+  aiRecommendations?: string[];
 }

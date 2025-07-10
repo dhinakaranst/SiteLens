@@ -42,7 +42,6 @@ export const SEOFullAudit: React.FC = () => {
           onAnalyze={handleAnalyze}
           isLoading={isLoading}
         />
-
         {progress && progress.stage !== 'initial' && (
           <div className={`mt-4 p-4 rounded-lg border ${getProgressColor(progress.stage)}`}>
             <div className="flex items-center gap-2">
