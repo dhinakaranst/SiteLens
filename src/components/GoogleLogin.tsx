@@ -10,7 +10,6 @@ const GoogleLoginComponent: React.FC = () => {
   const handleSuccess = async (credentialResponse: any) => {
     setIsLoading(true);
     try {
-      // Set timeout for the request
       const response = await axios.post('/api/auth/google', {
         credential: credentialResponse.credential
       }, {
@@ -22,9 +21,7 @@ const GoogleLoginComponent: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Login failed:', error);
-      
-      let errorMessage = 'Login failed. Please try again.';
-      
+      let errorMessage = error?.message || error?.toString() || 'Login failed. Please try again.';
       if (error.code === 'ECONNABORTED') {
         errorMessage = 'Login timeout. Please check your connection and try again.';
       } else if (error.response?.status === 408) {
@@ -34,16 +31,15 @@ const GoogleLoginComponent: React.FC = () => {
       } else if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
       }
-      
       alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleError = () => {
-    console.error('Google login failed');
-    alert('Google login failed. Please try again.');
+  const handleError = (error?: any) => {
+    console.error('Google login failed:', error);
+    alert(error?.message || error?.toString() || 'Google login failed. Please try again.');
   };
 
   if (isLoading) {
