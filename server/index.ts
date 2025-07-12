@@ -18,76 +18,25 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Store active analysis sessions
+// Restore activeAnalyses for progress tracking
 const activeAnalyses = new Map<string, { progress: any; clients: Set<any> }>();
 
-// Keep-alive mechanism for Render free tier
-const keepAlive = async () => {
-  try {
-    // Try to determine the base URL
-    let baseUrl = process.env.RENDER_EXTERNAL_URL;
-    
-    if (!baseUrl) {
-      // If not on Render, try to get from request headers or use localhost
-      baseUrl = `http://localhost:${PORT}`;
-    }
-    
-    const response = await axios.get(`${baseUrl}/health`, {
-      timeout: 5000,
-      headers: {
-        'User-Agent': 'SEO-Audit-KeepAlive/1.0'
-      }
-    });
-    console.log(`✅ Keep-alive ping successful: ${response.status}`);
-  } catch (error) {
-    console.log('⚠️ Keep-alive ping failed:', error instanceof Error ? error.message : 'Unknown error');
-  }
-};
+app.use(cors({
+  origin: 'https://seositelens.vercel.app',
+  credentials: true,
+}));
 
-// Start keep-alive ping every 14 minutes (Render spins down after 15 minutes)
-if (process.env.NODE_ENV === 'production' || process.env.RENDER_EXTERNAL_URL) {
-  setInterval(keepAlive, 14 * 60 * 1000); // 14 minutes
-  console.log('🔄 Keep-alive mechanism enabled');
-  
-  // Also ping immediately on startup
-  setTimeout(keepAlive, 5000);
-}
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader("Access-Control-Allow-Origin", "https://seositelens.vercel.app");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  next();
+});
 
-// Configure CORS to explicitly allow requests only from your deployed frontend domain
-const allowedOrigins = [
-  'http://localhost:5173', // Keep this for local development
-  'http://localhost:3000', // Keep this for local development
-  'https://sitelens.netlify.app', // Add your Netlify frontend URL
-  'https://seo-audit-tool.vercel.app', // Add your Vercel frontend URL
-  'https://*.vercel.app' // Allow all Vercel preview deployments
-];
-
-const corsOptions = {
-  origin: function(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    // Allow requests with no origin (like mobile apps, curl, postman)
-    if (!origin) {
-      return callback(null, true);
-    }
-    
-    if (allowedOrigins.some(allowedOrigin => 
-      origin === allowedOrigin || 
-      (allowedOrigin.includes('*') && origin.endsWith(allowedOrigin.split('*')[1]))
-    )) {
-      callback(null, true);
-    } else {
-      console.log('Blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Allow credentials (cookies, authorization headers, etc)
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-};
-
-app.use(cors(corsOptions));
 app.use(express.json());
 
-// Connect to MongoDB
 const connectDB = async () => {
   try {
     const mongoURI = process.env.MONGODB_URI;
@@ -95,7 +44,6 @@ const connectDB = async () => {
       console.error('MONGODB_URI not found in environment variables');
       process.exit(1);
     }
-    
     await mongoose.connect(mongoURI);
     console.log('✅ MongoDB connected successfully');
   } catch (error) {
@@ -104,15 +52,12 @@ const connectDB = async () => {
   }
 };
 
-// Connect to database
 connectDB();
 
-// Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Auth routes
 app.use('/api/auth', authRoutes);
 
 interface SEOReport {
@@ -392,10 +337,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 SEO Audit API running on port ${PORT}`);
-  console.log(`📊 Available endpoints:`);
-  console.log(`   POST /api/audit - Full SEO audit`);
-  console.log(`   POST /api/meta-check - Meta title & description checker`);
-  console.log(`   POST /api/headings - Headings analyzer`);
-  console.log(`   POST /api/social-tags - Social media tags checker`);
+  console.log(`Server running on port ${PORT}`);
 });
