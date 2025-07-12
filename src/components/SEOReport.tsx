@@ -108,12 +108,16 @@ export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
               {new URL(report.url).hostname}
             </span>
           </div>
+          {/* Download PDF Report button - locked for non-premium users */}
           <button
-            onClick={handleDownloadPDF}
-            className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition-colors absolute right-6 top-6"
-            title="Download PDF Report"
+            disabled
+            className="ml-4 px-4 py-2 bg-gray-200 text-gray-400 rounded-lg font-semibold shadow cursor-not-allowed absolute right-6 top-6 relative group"
+            title="Download PDF Report (Premium Only)"
           >
             Download PDF Report
+            <span className="absolute left-1/2 -bottom-8 -translate-x-1/2 bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+              Available only for premium users
+            </span>
           </button>
         </div>
         <div id="audit-report">
