@@ -166,18 +166,14 @@ export default function SeoAuditSections({ user, setShowSEOAudit, setShowLogin }
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center space-x-3 mb-4">
-                <picture>
-                  <source srcSet="/assets/sitelens_logo.webp" type="image/webp" />
-                  <source srcSet="/assets/sitelens_logo.png" type="image/png" />
-                  <img
-                    src="/assets/sitelens_logo.png"
-                    alt="SEO Site Lens Logo"
-                    loading="lazy"
-                    width="140"
-                    height="40"
-                    className="w-full max-w-[140px] h-auto"
-                  />
-                </picture>
+                <img
+                  src="/assets/sitelens_logo.webp"
+                  alt="SEO Site Lens Logo"
+                  loading="lazy"
+                  width="140"
+                  height="40"
+                  className="w-full max-w-[140px] h-auto"
+                />
                 <span className="text-xl font-bold">SiteLens</span>
               </div>
               <p className="text-gray-400 max-w-md">
