@@ -56,6 +56,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    // Clear any other auth-related data
+    sessionStorage.clear();
+    // Clear any cached API responses
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          caches.delete(name);
+        });
+      });
+    }
+    console.log('✅ Logout successful - all auth data cleared');
   };
 
   const value = {

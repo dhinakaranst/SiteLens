@@ -5,9 +5,10 @@ import sitelensLogo from '../assets/sitelens_logo.png';
 interface SeoAuditSectionsProps {
   user: any;
   setShowSEOAudit: (show: boolean) => void;
+  setShowLogin?: (show: boolean) => void;
 }
 
-export default function SeoAuditSections({ user, setShowSEOAudit }: SeoAuditSectionsProps) {
+export default function SeoAuditSections({ user, setShowSEOAudit, setShowLogin }: SeoAuditSectionsProps) {
   return (
     <>
       {/* Feature Deep-Dive Sections */}
@@ -15,109 +16,109 @@ export default function SeoAuditSections({ user, setShowSEOAudit }: SeoAuditSect
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Meta Information */}
-            <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Meta Information</h3>
-              <p className="text-gray-600 mb-6">Ensure search engines and LLMs understand your content.</p>
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-soft p-8 border border-gray-100 hover-lift transition-all duration-500 ease-out group animate-fade-in">
+              <h3 className="text-2xl font-bold text-black mb-4">Meta Information</h3>
+              <p className="text-black mb-6">Ensure search engines and LLMs understand your content.</p>
               <ul className="space-y-3">
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Meta title/description too short/long</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Meta title/description too short/long</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Missing canonical tags</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Missing canonical tags</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Robots meta tag issues</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Robots meta tag issues</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Language declaration inconsistencies</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Language declaration inconsistencies</span>
                 </li>
               </ul>
             </div>
 
             {/* Page Quality */}
-            <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Page Quality</h3>
-              <p className="text-gray-600 mb-6">Unfold the full potential of your content.</p>
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-soft p-8 border border-gray-100 hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.1s'}}>
+              <h3 className="text-2xl font-bold text-black mb-4">Page Quality</h3>
+              <p className="text-black mb-6">Unfold the full potential of your content.</p>
               <ul className="space-y-3">
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Low word count</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Low word count</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Missing ALT tags</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Missing ALT tags</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Duplicate content</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Duplicate content</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Poor mobile optimization</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Poor mobile optimization</span>
                 </li>
               </ul>
             </div>
 
             {/* Page & Link Structure */}
-            <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Page & Link Structure</h3>
-              <p className="text-gray-600 mb-6">Make your site easy to crawl.</p>
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-soft p-8 border border-gray-100 hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.2s'}}>
+              <h3 className="text-2xl font-bold text-black mb-4">Page & Link Structure</h3>
+              <p className="text-black mb-6">Make your site easy to crawl.</p>
               <ul className="space-y-3">
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Missing or misordered heading tags</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Missing or misordered heading tags</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Dynamic internal link parameters</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Dynamic internal link parameters</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Duplicate anchor text</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Duplicate anchor text</span>
                 </li>
               </ul>
             </div>
 
             {/* Server Configuration */}
-            <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Server Configuration</h3>
-              <p className="text-gray-600 mb-6">Technical foundation matters.</p>
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-soft p-8 border border-gray-100 hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.3s'}}>
+              <h3 className="text-2xl font-bold text-black mb-4">Server Configuration</h3>
+              <p className="text-black mb-6">Technical foundation matters.</p>
               <ul className="space-y-3">
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Redirect issues (www vs non-www)</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Redirect issues (www vs non-www)</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Long page load time</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Long page load time</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Excessive CSS/JS files</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Excessive CSS/JS files</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Large HTML size</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Large HTML size</span>
                 </li>
               </ul>
             </div>
 
             {/* External Factors */}
-            <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100 lg:col-span-2">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">External Factors</h3>
-              <p className="text-gray-600 mb-6">Boost your authority and rankings.</p>
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-soft p-8 border border-gray-100 hover-lift transition-all duration-500 ease-out group animate-fade-in lg:col-span-2" style={{animationDelay: '0.4s'}}>
+              <h3 className="text-2xl font-bold text-black mb-4">External Factors</h3>
+              <p className="text-black mb-6">Boost your authority and rankings.</p>
               <ul className="space-y-3">
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Weak backlink profile</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Weak backlink profile</span>
                 </li>
-                <li className="flex items-start">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">Missing off-page optimizations</span>
+                <li className="flex items-start group/item hover:bg-gray-50 rounded-lg p-2 transition-all duration-300 ease-out">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0 transition-all duration-300 ease-out group-hover/item:scale-110" />
+                  <span className="text-black">Missing off-page optimizations</span>
                 </li>
               </ul>
             </div>
@@ -139,8 +140,19 @@ export default function SeoAuditSections({ user, setShowSEOAudit }: SeoAuditSect
             </button>
           ) : (
             <button
-              className="px-8 py-4 bg-white text-blue-700 font-bold text-lg rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="px-8 py-4 bg-white text-blue-700 font-bold text-lg rounded-xl shadow-lg hover:bg-gray-50 hover:scale-105 transition-all duration-300 ease-out"
+              onClick={() => {
+                // Scroll to top and trigger login
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Add a small delay to ensure scroll completes before showing login
+                setTimeout(() => {
+                  // This will trigger the login component to show
+                  const loginButton = document.querySelector('[data-login-trigger]');
+                  if (loginButton) {
+                    (loginButton as HTMLElement).click();
+                  }
+                }, 1000);
+              }}
             >
               Login with Google to Start Free
             </button>

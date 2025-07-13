@@ -32,6 +32,7 @@ const GoogleLoginComponent: React.FC = () => {
 
       if (response.data.user) {
         login(response.data.user);
+        console.log('✅ Login successful:', response.data.user.name);
       }
     } catch (error: any) {
       console.error('❌ Login failed:', error);
@@ -43,7 +44,7 @@ const GoogleLoginComponent: React.FC = () => {
         data: error?.response?.data
       });
       
-      let errorMessage = error?.message || error?.toString() || 'Login failed. Please try again.';
+      let errorMessage = 'Login failed. Please try again.';
       
       if (error.code === 'ERR_NETWORK') {
         errorMessage = 'Network error. Please check if the server is running and try again.';
@@ -59,8 +60,13 @@ const GoogleLoginComponent: React.FC = () => {
         errorMessage = 'API endpoint not found. Please check server configuration.';
       } else if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
+      } else if (error?.message) {
+        errorMessage = error.message;
       }
       
+      // Use a more user-friendly notification instead of alert
+      console.error('Login error:', errorMessage);
+      // You could replace this with a toast notification
       alert(errorMessage);
     } finally {
       setIsLoading(false);
@@ -77,10 +83,10 @@ const GoogleLoginComponent: React.FC = () => {
       <div className="flex justify-center">
         <button 
           disabled 
-          className="flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg opacity-50 cursor-not-allowed"
+          className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl opacity-75 cursor-not-allowed shadow-lg transition-all duration-300"
         >
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-          Signing in...
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+          <span className="font-medium">Signing in...</span>
         </button>
       </div>
     );
@@ -95,6 +101,7 @@ const GoogleLoginComponent: React.FC = () => {
         size="large"
         text="signin_with"
         shape="rectangular"
+        data-login-trigger="true"
       />
     </div>
   );

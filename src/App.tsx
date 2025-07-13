@@ -10,7 +10,7 @@ import { useAuth } from './contexts/AuthContext';
 import GoogleLoginComponent from './components/GoogleLogin';
 import UserProfile from './components/UserProfile';
 import SeoAuditSections from './components/SeoAuditSections';
-import { AlertCircle, Search, Hash, FileText, Share2, Rocket, Brain, CheckCircle, Zap, Shield, Download, User, Clock } from 'lucide-react';
+import { AlertCircle, Search, Hash, FileText, Share2, Rocket, Brain, CheckCircle, Zap, Shield, Download, User, Clock, Menu, X, ChevronDown, Globe } from 'lucide-react';
 import sitelensLogo from './assets/sitelens_logo.png';
 
 type ActiveTool = 'full-audit' | 'meta-checker' | 'headings-analyzer' | 'social-tags';
@@ -341,77 +341,77 @@ const HomePage = ({
   };
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30">
       <section className="pt-20 pb-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-4">SEO Audit. Instantly.</h1>
-          <p className="text-xl text-gray-600 mb-8">Scan your website in seconds. Get SEO scores, issues, and fixes with one click.</p>
+          <h1 className="text-5xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in">SEO Analyzer</h1>
+          <p className="text-xl text-gray-600 mb-8 animate-fade-in">Scan your website in seconds. Get SEO scores, issues, and fixes with one click.</p>
           <form onSubmit={handleAuditSubmit} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-2">
             <input
               type="url"
               value={inputs.url}
               onChange={(e) => setInputs({ ...inputs, url: e.target.value })}
               placeholder="Enter website URL (e.g., https://yourdomain.com)"
-              className="flex-1 min-w-[320px] px-6 py-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-lg bg-white shadow-sm transition-all duration-300"
+              className="flex-1 min-w-[320px] px-6 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400 text-lg bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-500 ease-out hover:shadow-xl focus:shadow-2xl hover:scale-[1.02] focus:scale-[1.02]"
               required
             />
             <button
               type="submit"
               disabled={isLoading}
-              className="flex items-center gap-2 px-8 py-4 bg-blue-500 text-white font-bold text-lg rounded-lg hover:bg-blue-600 hover:scale-105 hover:shadow-lg transition-all duration-200"
+              className="flex items-center gap-2 px-8 py-4 bg-blue-600 text-white font-bold text-lg rounded-xl hover:bg-blue-700 hover:scale-105 hover:shadow-xl transition-all duration-500 ease-out relative overflow-hidden group"
             >
-              <span>
-                <svg aria-hidden="true" className="w-5 h-5 mr-1 -ml-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l7-7m0 0l-7-7m7 7H3" /></svg>
+              <span className="relative z-10">
+                <svg aria-hidden="true" className="w-5 h-5 mr-1 -ml-1 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l7-7m0 0l-7-7m7 7H3" /></svg>
               </span>
-              {isLoading ? 'Analyzing...' : 'Run SEO Audit'}
+              <span className="relative z-10">{isLoading ? 'Analyzing...' : 'Run SEO Audit'}</span>
             </button>
           </form>
           <div className="text-blue-600 font-medium text-sm mt-2">100% free. No signup required. 3 free audits/day</div>
         </div>
       </section>
-      <section className="bg-gray-50 py-12">
+      <section className="bg-gradient-to-br from-gray-50 via-blue-50/20 to-purple-50/20 py-16">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-start">
-            <div className="bg-blue-100 rounded-lg p-3 mb-4">
-              <svg aria-hidden="true" className="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in">
+            <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
+              <svg aria-hidden="true" className="w-8 h-8 text-blue-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
             </div>
-            <h3 className="text-lg font-bold mb-1">Instant SEO Reports</h3>
-            <p className="text-gray-600">Audit your website in under 30 seconds.</p>
+            <h3 className="text-lg font-bold mb-1 text-black">Instant SEO Reports</h3>
+            <p className="text-black">Audit your website in under 30 seconds.</p>
           </div>
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-start">
-            <div className="bg-purple-100 rounded-lg p-3 mb-4">
-              <svg aria-hidden="true" className="w-7 h-7 text-purple-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9" /><path d="M12 4v16m0 0H3" /></svg>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <div className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
+              <svg aria-hidden="true" className="w-8 h-8 text-purple-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9" /><path d="M12 4v16m0 0H3" /></svg>
             </div>
-            <h3 className="text-lg font-bold mb-1">AI-Powered Fixes</h3>
-            <p className="text-gray-600">Get smart suggestions to improve your SEO.</p>
+            <h3 className="text-lg font-bold mb-1 text-black">AI-Powered Fixes</h3>
+            <p className="text-black">Get smart suggestions to improve your SEO.</p>
           </div>
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-start">
-            <div className="bg-green-100 rounded-lg p-3 mb-4">
-              <svg aria-hidden="true" className="w-7 h-7 text-green-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 17v-6m0 0V7m0 4h4m-4 0H8" /></svg>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.2s'}}>
+            <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
+              <svg aria-hidden="true" className="w-8 h-8 text-green-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 17v-6m0 0V7m0 4h4m-4 0H8" /></svg>
             </div>
-            <h3 className="text-lg font-bold mb-1">PDF Reports</h3>
-            <p className="text-gray-600">Download and share detailed SEO audits.</p>
+            <h3 className="text-lg font-bold mb-1 text-black">PDF Reports</h3>
+            <p className="text-black">Download and share detailed SEO audits.</p>
           </div>
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-start">
-            <div className="bg-orange-100 rounded-lg p-3 mb-4">
-              <svg aria-hidden="true" className="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4m0-4h.01" /></svg>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.3s'}}>
+            <div className="bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
+              <svg aria-hidden="true" className="w-8 h-8 text-orange-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4m0-4h.01" /></svg>
             </div>
-            <h3 className="text-lg font-bold mb-1">No Login Needed</h3>
-            <p className="text-gray-600">Use without creating an account.</p>
+            <h3 className="text-lg font-bold mb-1 text-black">No Login Needed</h3>
+            <p className="text-black">Use without creating an account.</p>
           </div>
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-start">
-            <div className="bg-blue-100 rounded-lg p-3 mb-4">
-              <svg aria-hidden="true" className="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.4s'}}>
+            <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
+              <svg aria-hidden="true" className="w-8 h-8 text-blue-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
             </div>
-            <h3 className="text-lg font-bold mb-1">3 Free Audits Daily</h3>
-            <p className="text-gray-600">Fair usage limit to keep it free.</p>
+            <h3 className="text-lg font-bold mb-1 text-black">3 Free Audits Daily</h3>
+            <p className="text-black">Fair usage limit to keep it free.</p>
           </div>
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-start">
-            <div className="bg-red-100 rounded-lg p-3 mb-4">
-              <svg aria-hidden="true" className="w-7 h-7 text-red-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" /><path d="M12 8v4m0 4h.01" /></svg>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.5s'}}>
+            <div className="bg-gradient-to-br from-red-100 to-red-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
+              <svg aria-hidden="true" className="w-8 h-8 text-red-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" /><path d="M12 8v4m0 4h.01" /></svg>
             </div>
-            <h3 className="text-lg font-bold mb-1">Secure & Private</h3>
-            <p className="text-gray-600">Your data is never stored or shared.</p>
+            <h3 className="text-lg font-bold mb-1 text-black">Secure & Private</h3>
+            <p className="text-black">Your data is never stored or shared.</p>
           </div>
         </div>
       </section>
@@ -645,83 +645,212 @@ function LayoutWrapper({
   const handleMouseLeave = () => {
     setTimeout(() => {
       setHoveredMenu(null);
-    }, 800); // Increased to 800ms for better usability
+    }, 500); // Increased delay for better user experience
   };
 
   return (
     <>
-      {/* Navigation Bar */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+      {/* Modern Navigation Bar */}
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <img src={sitelensLogo} alt="SiteLens Logo" className="h-8 w-auto" />
-              <span className="text-xl font-bold text-gray-900">SiteLens</span>
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            {/* Logo */}
+            <div className="flex items-center space-x-3 group">
+              <div className="relative">
+                <img src={sitelensLogo} alt="SiteLens Logo" className="h-8 w-auto lg:h-10 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3" />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out scale-0 group-hover:scale-150"></div>
+              </div>
+              <span className="text-xl lg:text-2xl font-bold text-black animate-fade-in">
+                SiteLens
+              </span>
             </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <NavLink to="/" className={({ isActive }) => isActive ? "text-blue-600 font-bold" : "text-gray-700 hover:text-blue-600 font-medium transition-colors"}>Home</NavLink>
+
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-8">
+              <NavLink 
+                to="/" 
+                className={({ isActive }) => 
+                  `relative px-3 py-2 text-sm font-medium transition-all duration-500 ease-out hover:scale-105 ${
+                    isActive 
+                      ? 'text-blue-600' 
+                      : 'text-gray-700 hover:text-blue-600'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <span className="relative z-10">Home</span>
+                    {isActive && (
+                      <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full animate-pulse-glow"></div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg opacity-0 hover:opacity-100 transition-all duration-500 ease-out scale-95 hover:scale-100"></div>
+                  </>
+                )}
+              </NavLink>
               
               {/* Features & Use Cases Dropdown */}
               <div
-                className="relative dropdown-container"
+                className="relative group"
                 onMouseEnter={() => handleMouseEnter("features")}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-                  Features & Use Cases
+                <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-all duration-500 ease-out group-hover:scale-105 relative overflow-hidden">
+                  <span className="relative z-10">Features & Use Cases</span>
+                  <ChevronDown className="ml-1 w-4 h-4 transition-all duration-500 ease-out group-hover:rotate-180 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out scale-95 group-hover:scale-100"></div>
                 </button>
                 {hoveredMenu === "features" && (
                   <div 
-                    className="absolute top-full left-0 mt-2 w-[400px] bg-white shadow-lg rounded-xl p-4 border border-gray-100 animate-in fade-in-0 slide-in-from-top-2 duration-200"
+                    className="absolute top-full left-0 mt-2 w-80 bg-white/95 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-gray-100 animate-in fade-in-0 slide-in-from-top-2 duration-500 ease-out"
                     onMouseEnter={() => handleMouseEnter("features")}
                     onMouseLeave={handleMouseLeave}
                   >
-                    <h4 className="text-sm text-gray-500 mb-2 px-2">Explore SEO Tools</h4>
-                    <ul className="text-sm space-y-2">
-                      <li><button onClick={() => setShowSEOAudit(true)} className="w-full text-left px-2 py-1 hover:bg-blue-50 rounded flex items-center">🔍 SEO Checker</button></li>
-                      <li><button onClick={() => setShowComingSoon(true)} className="w-full text-left px-2 py-1 hover:bg-blue-50 rounded flex items-center">🔑 Keyword Checker</button></li>
-                      <li><button onClick={() => setShowComingSoon(true)} className="w-full text-left px-2 py-1 hover:bg-blue-50 rounded flex items-center">🔗 Backlink Checker</button></li>
-                      <li><button onClick={() => setShowComingSoon(true)} className="w-full text-left px-2 py-1 hover:bg-blue-50 rounded flex items-center">📈 Ranking Checker</button></li>
-                    </ul>
+                    <h4 className="text-xs font-semibold text-gray-500 mb-4 px-2 uppercase tracking-wider">Explore SEO Tools</h4>
+                    <div className="space-y-3">
+                      <button 
+                        onClick={() => setShowSEOAudit(true)} 
+                        className="w-full text-left px-3 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-xl flex items-center transition-all duration-500 ease-out hover:scale-105 group/item relative overflow-hidden"
+                      >
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3 group-hover/item:bg-blue-200 transition-all duration-500 ease-out group-hover/item:scale-110 group-hover/item:rotate-3">
+                          <Search className="w-5 h-5 text-blue-600 transition-all duration-500 ease-out group-hover/item:scale-110" />
+                        </div>
+                        <div className="relative z-10">
+                          <div className="font-medium text-gray-900">SEO Checker</div>
+                          <div className="text-sm text-gray-500">Complete website analysis</div>
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-100/50 to-purple-100/50 rounded-xl opacity-0 group-hover/item:opacity-100 transition-all duration-500 ease-out scale-95 group-hover/item:scale-100"></div>
+                      </button>
+                      <button 
+                        onClick={() => setShowComingSoon(true)} 
+                        className="w-full text-left px-3 py-3 hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50 rounded-xl flex items-center transition-all duration-300 hover:scale-105 group/item"
+                      >
+                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3 group-hover/item:bg-green-200 transition-colors">
+                          <Hash className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">Keyword Checker</div>
+                          <div className="text-sm text-gray-500">Keyword analysis & research</div>
+                        </div>
+                      </button>
+                      <button 
+                        onClick={() => setShowComingSoon(true)} 
+                        className="w-full text-left px-3 py-3 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 rounded-xl flex items-center transition-all duration-300 hover:scale-105 group/item"
+                      >
+                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3 group-hover/item:bg-purple-200 transition-colors">
+                          <Share2 className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">Backlink Checker</div>
+                          <div className="text-sm text-gray-500">Analyze backlink profile</div>
+                        </div>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Resources Dropdown */}
               <div
-                className="relative dropdown-container"
+                className="relative group"
                 onMouseEnter={() => handleMouseEnter("resources")}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-all duration-300 group-hover:scale-105">
                   Resources
+                  <ChevronDown className="ml-1 w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
                 </button>
                 {hoveredMenu === "resources" && (
                   <div 
-                    className="absolute top-full left-0 mt-2 w-[300px] bg-white shadow-lg rounded-xl p-4 border border-gray-100 animate-in fade-in-0 slide-in-from-top-2 duration-200"
+                    className="absolute top-full left-0 mt-2 w-72 bg-white/95 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-gray-100 animate-in fade-in-0 slide-in-from-top-2 duration-300"
                     onMouseEnter={() => handleMouseEnter("resources")}
                     onMouseLeave={handleMouseLeave}
                   >
-                    <ul className="text-sm space-y-2">
-                      <li><button onClick={() => setShowComingSoon(true)} className="w-full text-left px-2 py-1 hover:bg-blue-50 rounded flex items-center">📘 Documentation</button></li>
-                      <li><button onClick={() => setShowComingSoon(true)} className="w-full text-left px-2 py-1 hover:bg-blue-50 rounded flex items-center">📝 Blog</button></li>
-                      <li><button onClick={() => setShowComingSoon(true)} className="w-full text-left px-2 py-1 hover:bg-blue-50 rounded flex items-center">🎥 Video Tutorials</button></li>
-                      <li><button onClick={() => setShowComingSoon(true)} className="w-full text-left px-2 py-1 hover:bg-blue-50 rounded flex items-center">📊 Case Studies</button></li>
-                    </ul>
+                    <div className="space-y-3">
+                      <button 
+                        onClick={() => setShowComingSoon(true)} 
+                        className="w-full text-left px-3 py-3 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 rounded-xl flex items-center transition-all duration-300 hover:scale-105 group/item"
+                      >
+                        <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3 group-hover/item:bg-orange-200 transition-colors">
+                          <FileText className="w-5 h-5 text-orange-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">Documentation</div>
+                          <div className="text-sm text-gray-500">Guides & tutorials</div>
+                        </div>
+                      </button>
+                      <button 
+                        onClick={() => setShowComingSoon(true)} 
+                        className="w-full text-left px-3 py-3 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 rounded-xl flex items-center transition-all duration-300 hover:scale-105 group/item"
+                      >
+                        <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3 group-hover/item:bg-indigo-200 transition-colors">
+                          <Brain className="w-5 h-5 text-indigo-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">Blog</div>
+                          <div className="text-sm text-gray-500">SEO insights & tips</div>
+                        </div>
+                      </button>
+                      <button 
+                        onClick={() => setShowComingSoon(true)} 
+                        className="w-full text-left px-3 py-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 rounded-xl flex items-center transition-all duration-300 hover:scale-105 group/item"
+                      >
+                        <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center mr-3 group-hover/item:bg-pink-200 transition-colors">
+                          <Rocket className="w-5 h-5 text-pink-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">Case Studies</div>
+                          <div className="text-sm text-gray-500">Success stories</div>
+                        </div>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
 
-              <NavLink to="/pricing" className={({ isActive }) => isActive ? "text-blue-600 font-bold" : "text-gray-700 hover:text-blue-600 font-medium transition-colors"}>Pricing</NavLink>
-              <div className="relative dropdown-container">
-                <button className="flex items-center px-3 py-1 rounded-md border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 font-medium text-sm" onClick={() => setShowLangDropdown((v: boolean) => !v)}>
+              <NavLink 
+                to="/pricing" 
+                className={({ isActive }) => 
+                  `relative px-3 py-2 text-sm font-medium transition-all duration-300 ${
+                    isActive 
+                      ? 'text-blue-600' 
+                      : 'text-gray-700 hover:text-blue-600'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    Pricing
+                    {isActive && (
+                      <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+                    )}
+                  </>
+                )}
+              </NavLink>
+
+              {/* Language Selector */}
+              <div className="relative group">
+                <button 
+                  className="flex items-center px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 font-medium text-sm transition-all duration-300 group-hover:scale-105" 
+                  onClick={() => setShowLangDropdown((v: boolean) => !v)}
+                >
+                  <Globe className="w-4 h-4 mr-1" />
                   {lang}
-                  <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                  <ChevronDown className="ml-1 w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
                 </button>
                 {showLangDropdown && (
-                  <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow z-50">
+                  <div className="absolute right-0 mt-2 w-32 bg-white/95 backdrop-blur-md border border-gray-200 rounded-xl shadow-lg z-50 animate-in fade-in-0 slide-in-from-top-2 duration-300">
                     {["EN", "ES", "FR"].map(l => (
-                      <button key={l} className={`block w-full text-left px-4 py-2 hover:bg-blue-50 ${lang === l ? "font-bold text-blue-600" : ""}`} onClick={() => { setLang(l); setShowLangDropdown(false); localStorage.setItem('lang', l); }}>
+                      <button 
+                        key={l} 
+                        className={`block w-full text-left px-4 py-2 hover:bg-blue-50 transition-colors duration-200 ${
+                          lang === l ? "font-bold text-blue-600 bg-blue-50" : ""
+                        }`} 
+                        onClick={() => { 
+                          setLang(l); 
+                          setShowLangDropdown(false); 
+                          localStorage.setItem('lang', l); 
+                        }}
+                      >
                         {l}
                       </button>
                     ))}
@@ -729,66 +858,149 @@ function LayoutWrapper({
                 )}
               </div>
             </div>
+
+            {/* User Actions & Mobile Menu Button */}
             <div className="flex items-center space-x-4">
-              {user ? (<UserProfile />) : (<GoogleLoginComponent />)}
+              {user ? (
+                <div className="hidden sm:block">
+                  <UserProfile />
+                </div>
+              ) : (
+                <div className="hidden sm:block">
+                  <GoogleLoginComponent />
+                </div>
+              )}
               
               {/* Mobile menu button */}
               <button
-                className="md:hidden p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100"
+                className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all duration-300"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
               </button>
             </div>
           </div>
           
           {/* Mobile menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden mobile-menu-container">
-              <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
-                <NavLink 
-                  to="/" 
-                  className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Home
-                </NavLink>
-                <div className="px-3 py-2">
+          <div className={`lg:hidden transition-all duration-700 ease-out ${
+            mobileMenuOpen 
+              ? 'max-h-[500px] opacity-100' 
+              : 'max-h-0 opacity-0 overflow-hidden'
+          }`}>
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-white/95 backdrop-blur-md border-t border-gray-200 rounded-b-2xl shadow-lg">
+              <NavLink 
+                to="/" 
+                className="block px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-xl transition-all duration-500 ease-out hover:scale-105 relative overflow-hidden"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="relative z-10">Home</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl opacity-0 hover:opacity-100 transition-all duration-500 ease-out scale-95 hover:scale-100"></div>
+              </NavLink>
+              
+              {/* Mobile Features Section */}
+              <div className="px-4 py-3">
+                <div className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Features</div>
+                <div className="space-y-2">
                   <button 
-                    className="text-gray-700 hover:text-blue-600 font-medium"
-                    onClick={() => setShowSEOAudit(true)}
+                    className="w-full text-left px-3 py-3 text-gray-700 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-xl transition-all duration-300 flex items-center"
+                    onClick={() => {
+                      setShowSEOAudit(true);
+                      setMobileMenuOpen(false);
+                    }}
                   >
-                    🔍 SEO Checker
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                      <Search className="w-4 h-4 text-blue-600" />
+                    </div>
+                    SEO Checker
+                  </button>
+                  <button 
+                    className="w-full text-left px-3 py-3 text-gray-700 hover:text-green-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50 rounded-xl transition-all duration-300 flex items-center"
+                    onClick={() => {
+                      setShowComingSoon(true);
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                      <Hash className="w-4 h-4 text-green-600" />
+                    </div>
+                    Keyword Checker
+                  </button>
+                  <button 
+                    className="w-full text-left px-3 py-3 text-gray-700 hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 rounded-xl transition-all duration-300 flex items-center"
+                    onClick={() => {
+                      setShowComingSoon(true);
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                      <Share2 className="w-4 h-4 text-purple-600" />
+                    </div>
+                    Backlink Checker
                   </button>
                 </div>
-                <div className="px-3 py-2">
+              </div>
+
+              {/* Mobile Resources Section */}
+              <div className="px-4 py-3">
+                <div className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Resources</div>
+                <div className="space-y-2">
                   <button 
-                    className="text-gray-700 hover:text-blue-600 font-medium"
-                    onClick={() => setShowComingSoon(true)}
+                    className="w-full text-left px-3 py-3 text-gray-700 hover:text-orange-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 rounded-xl transition-all duration-300 flex items-center"
+                    onClick={() => {
+                      setShowComingSoon(true);
+                      setMobileMenuOpen(false);
+                    }}
                   >
-                    📘 Documentation
+                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                      <FileText className="w-4 h-4 text-orange-600" />
+                    </div>
+                    Documentation
+                  </button>
+                  <button 
+                    className="w-full text-left px-3 py-3 text-gray-700 hover:text-indigo-600 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 rounded-xl transition-all duration-300 flex items-center"
+                    onClick={() => {
+                      setShowComingSoon(true);
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                      <Brain className="w-4 h-4 text-indigo-600" />
+                    </div>
+                    Blog
                   </button>
                 </div>
-                <NavLink 
-                  to="/pricing" 
-                  className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Pricing
-                </NavLink>
+              </div>
+
+              <NavLink 
+                to="/pricing" 
+                className="block px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-xl transition-all duration-300"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Pricing
+              </NavLink>
+
+              {/* Mobile User Actions */}
+              <div className="px-4 py-3 border-t border-gray-100">
+                {user ? (
+                  <UserProfile />
+                ) : (
+                  <GoogleLoginComponent />
+                )}
               </div>
             </div>
-          )}
+          </div>
         </div>
       </nav>
 
       <Routes>
         <Route path="/" element={<HomePage analyzeWebsite={analyzeWebsite} isLoading={isLoading} />} />
-        <Route path="/features" element={<ProtectedRoute><FeaturesPage /></ProtectedRoute>} />
-        <Route path="/pricing" element={<ProtectedRoute><PricingPage /></ProtectedRoute>} />
-        <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/resources" element={<ResourcesPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
 
@@ -808,7 +1020,13 @@ function LayoutWrapper({
       
       {/* Show SEO sections only on home page */}
       {isHome && (
-        <SeoAuditSections user={user} setShowSEOAudit={setShowSEOAudit} />
+        <SeoAuditSections 
+          user={user} 
+          setShowSEOAudit={setShowSEOAudit}
+          setShowLogin={() => {
+            // This will be handled by the scroll and click approach
+          }}
+        />
       )}
     </>
   );
