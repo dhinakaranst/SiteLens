@@ -1,27 +1,47 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Meta SEO -->
+    <title>SEO Site Lens – Free AI SEO Audit Tool</title>
+    <meta name="description" content="Free AI-powered SEO analyzer. Get instant website audits. No login required. Discover how to improve your site fast.">
+    <link rel="canonical" href="https://seositelens.vercel.app/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SEO Site Lens – Free AI SEO Audit Tool">
+    <meta property="og:description" content="Instant, free SEO analyzer powered by AI. Analyze your site now. No login needed.">
+    <meta property="og:image" content="https://seositelens.vercel.app/preview.png">
+    <meta property="og:url" content="https://seositelens.vercel.app/">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SEO Site Lens – Free AI SEO Audit Tool">
+    <meta name="twitter:description" content="Free, instant AI-powered SEO audit tool. No login required. Analyze your site now.">
+    <meta name="twitter:image" content="https://seositelens.vercel.app/preview.png">
+
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; object-src 'none';">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SiteLens: Free SEO & Website Analyzer</title>
     <link rel="icon" type="image/png" href="/favicon.ico" />
-    <meta name="description" content="Free SEO checker, keyword research, and backlink analysis. Audit your website instantly, get detailed reports, and boost your search rankings with our comprehensive SEO tools." />
-    <meta name="keywords" content="Free SEO checker, no cost keyword analyzer, freemium SEO toolkit, free backlink checker, free ranking checker, SEO audit, site audit, keyword tool, backlink tool, ranking tool, premium SEO, Vercel ready" />
-    <meta property="og:title" content="SiteLens: Free SEO & Website Analyzer">
-    <meta property="og:description" content="Free SEO checker, keyword research, and backlink analysis. Audit your website instantly, get detailed reports, and boost your search rankings with our comprehensive SEO tools.">
-    <meta property="og:image" content="https://seositelens.vercel.app/og-image.png">
-    <meta property="og:url" content="https://seositelens.vercel.app">
-    <meta name="twitter:title" content="SiteLens: Free SEO & Website Analyzer">
-    <meta name="twitter:description" content="Free SEO checker, keyword research, and backlink analysis. Audit your website instantly, get detailed reports, and boost your search rankings with our comprehensive SEO tools.">
-    <meta name="twitter:image" content="https://seositelens.vercel.app/og-image.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <link rel="canonical" href="https://seositelens.vercel.app/" />
-    <meta name="author" content="SEO SiteLens Team" />
-    <meta http-equiv="content-language" content="en" />
-    <meta name="theme-color" content="#2563eb" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"SEO SiteLens","url":"https://seositelens.vercel.app","logo":"https://seositelens.vercel.app/og-image.png"}</script>
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="robots" href="/robots.txt" />
+    <link rel="preload" as="image" href="/assets/sitelens_logo.webp" type="image/webp" />
+    <!-- Google Analytics 4 (only in production) -->
+    <script type="module">
+      if (import.meta.env && import.meta.env.PROD) {
+        const s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+        s.async = true;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+      }
+    </script>
+    <!-- AddThis native share -->
+    <script type="text/javascript" src="https://s7.addthis.com/js/300/addthis_widget.js#pubid=ra-XXXXXXXXXX" async></script>
   </head>
   <body>
     <h1 style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">SiteLens: Free SEO & Website Analyzer - Comprehensive SEO Tools</h1>

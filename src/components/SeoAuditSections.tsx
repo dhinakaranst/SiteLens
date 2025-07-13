@@ -166,7 +166,18 @@ export default function SeoAuditSections({ user, setShowSEOAudit, setShowLogin }
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center space-x-3 mb-4">
-                <img src={sitelensLogo} alt="SiteLens Logo" className="h-8 w-auto" />
+                <picture>
+                  <source srcSet="/assets/sitelens_logo.webp" type="image/webp" />
+                  <source srcSet="/assets/sitelens_logo.png" type="image/png" />
+                  <img
+                    src="/assets/sitelens_logo.png"
+                    alt="SEO Site Lens Logo"
+                    loading="lazy"
+                    width="140"
+                    height="40"
+                    className="w-full max-w-[140px] h-auto"
+                  />
+                </picture>
                 <span className="text-xl font-bold">SiteLens</span>
               </div>
               <p className="text-gray-400 max-w-md">
@@ -187,8 +198,8 @@ export default function SeoAuditSections({ user, setShowSEOAudit, setShowLogin }
               <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2">
                 <li>
-                  <a href="mailto:dhinakarant104@gmail.com" className="text-gray-400 hover:text-white transition-colors">
-                    dhinakarant104@gmail.com
+                  <a href="mailto:&#100;&#104;&#105;&#110;&#97;&#107;&#97;&#114;&#97;&#110;&#116;&#49;&#48;&#52;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;" className="text-gray-400 hover:text-white transition-colors">
+                    &#100;&#104;&#105;&#110;&#97;&#107;&#97;&#114;&#97;&#110;&#116;&#49;&#48;&#52;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;
                   </a>
                 </li>
                 <li>
@@ -206,6 +217,9 @@ export default function SeoAuditSections({ user, setShowSEOAudit, setShowLogin }
           <div className="border-t border-gray-800 mt-8 pt-8 text-center">
             <p className="text-gray-400">© 2025 SiteLens. All rights reserved.</p>
           </div>
+        </div>
+        <div className="mt-8 flex justify-center">
+          <div className="addthis_inline_share_toolbox"></div>
         </div>
       </footer>
     </>

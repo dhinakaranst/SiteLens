@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, NavLink, useLocation } from 'react-router-dom';
 import { UrlInput } from './components/UrlInput';
 import { SEOReport } from './components/SEOReport';
@@ -315,6 +315,8 @@ const ResourcesPage = () => (
   </div>
 );
 
+const NotFound = lazy(() => import('./components/NotFound'));
+
 // ProtectedRoute wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -581,31 +583,33 @@ function App() {
 
   return (
     <>
-      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <LayoutWrapper 
-          analyzeWebsite={analyzeWebsite}
-          isLoading={isLoading}
-          showToast={showToast}
-          setShowToast={setShowToast}
-          showPDFModal={showPDFModal}
-          setShowPDFModal={setShowPDFModal}
-          showComingSoon={showComingSoon}
-          setShowComingSoon={setShowComingSoon}
-          showSEOAudit={showSEOAudit}
-          setShowSEOAudit={setShowSEOAudit}
-          checksLeft={checksLeft}
-          handleToolAction={handleToolAction}
-          hoveredMenu={hoveredMenu}
-          setHoveredMenu={setHoveredMenu}
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
-          showLangDropdown={showLangDropdown}
-          setShowLangDropdown={setShowLangDropdown}
-          lang={lang}
-          setLang={setLang}
-          user={user}
-        />
-      </Router>
+      <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <LayoutWrapper 
+            analyzeWebsite={analyzeWebsite}
+            isLoading={isLoading}
+            showToast={showToast}
+            setShowToast={setShowToast}
+            showPDFModal={showPDFModal}
+            setShowPDFModal={setShowPDFModal}
+            showComingSoon={showComingSoon}
+            setShowComingSoon={setShowComingSoon}
+            showSEOAudit={showSEOAudit}
+            setShowSEOAudit={setShowSEOAudit}
+            checksLeft={checksLeft}
+            handleToolAction={handleToolAction}
+            hoveredMenu={hoveredMenu}
+            setHoveredMenu={setHoveredMenu}
+            mobileMenuOpen={mobileMenuOpen}
+            setMobileMenuOpen={setMobileMenuOpen}
+            showLangDropdown={showLangDropdown}
+            setShowLangDropdown={setShowLangDropdown}
+            lang={lang}
+            setLang={setLang}
+            user={user}
+          />
+        </Router>
+      </Suspense>
     </>
   );
 }
@@ -1002,7 +1006,7 @@ function LayoutWrapper({
         <Route path="/features" element={<FeaturesPage />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/resources" element={<ResourcesPage />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       {/* Toast and Modal components */}

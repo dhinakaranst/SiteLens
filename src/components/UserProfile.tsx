@@ -19,6 +19,9 @@ const UserProfile: React.FC = () => {
             src={user.picture}
             alt={user.name}
             className="w-8 h-8 rounded-full"
+            loading="lazy"
+            width="32"
+            height="32"
           />
         ) : (
           <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
