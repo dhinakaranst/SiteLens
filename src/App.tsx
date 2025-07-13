@@ -346,6 +346,7 @@ const HomePage = ({
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in">SEO Analyzer</h1>
           <p className="text-xl text-gray-600 mb-8 animate-fade-in">Scan your website in seconds. Get SEO scores, issues, and fixes with one click.</p>
+          
           <form onSubmit={handleAuditSubmit} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-2">
             <input
               type="url"

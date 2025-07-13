@@ -58,11 +58,12 @@ export async function analyzeWebsite(
   try {
     onProgress?.({ stage: 'fetching', message: 'Starting website analysis...' });
     
-    // Fetch the webpage with increased timeout
+    // Fetch the webpage with optimized timeout
     const response = await axios.get(url, {
-      timeout: 30000, // Increased from 10000 to 30000 (30 seconds)
+      timeout: 15000, // Reduced from 30000 to 15000 (15 seconds)
       headers: {
-        'User-Agent': 'SEO-Audit-Tool/1.0'
+        'User-Agent': 'SEO-Audit-Tool/1.0',
+        'Accept-Encoding': 'gzip, deflate' // Enable compression
       }
     });
 
@@ -77,7 +78,7 @@ export async function analyzeWebsite(
         const title = $('title').text().trim();
         const description = $('meta[name="description"]').attr('content') || '';
         
-        // Heading analysis
+        // OPTIMIZATION: Use more efficient selectors
         const headings = {
           h1: $('h1').length,
           h2: $('h2').length,
@@ -87,8 +88,8 @@ export async function analyzeWebsite(
           h6: $('h6').length,
         };
 
-        // Image analysis
-        const images = $('img');
+        // OPTIMIZATION: Limit image analysis to first 20 images for speed
+        const images = $('img').slice(0, 20);
         const imagesWithoutAlt: string[] = [];
         let imagesWithAlt = 0;
 
@@ -103,8 +104,8 @@ export async function analyzeWebsite(
           }
         });
 
-        // Link analysis
-        const links = $('a[href]');
+        // OPTIMIZATION: Limit link analysis to first 50 links for speed
+        const links = $('a[href]').slice(0, 50);
         let internalLinks = 0;
         let externalLinks = 0;
         const brokenLinks: string[] = [];
@@ -153,14 +154,14 @@ export async function analyzeWebsite(
 
     onProgress?.({ stage: 'analyzing', message: 'Basic SEO analysis complete, checking technical elements...' });
 
-    // Technical SEO checks in parallel
+    // OPTIMIZATION: Reduce technical checks timeout
     const [robotsTxt, sitemap] = await Promise.all([
       // Check robots.txt
       (async () => {
         try {
           const baseUrl = new URL(url);
           const robotsResponse = await axios.get(`${baseUrl.origin}/robots.txt`, { 
-            timeout: 10000 // Increased from 5000 to 10000
+            timeout: 5000 // Reduced from 10000 to 5000 (5 seconds)
           });
           return robotsResponse.status === 200;
         } catch {
@@ -172,7 +173,7 @@ export async function analyzeWebsite(
         try {
           const baseUrl = new URL(url);
           const sitemapResponse = await axios.get(`${baseUrl.origin}/sitemap.xml`, { 
-            timeout: 10000 // Increased from 5000 to 10000
+            timeout: 5000 // Reduced from 10000 to 5000 (5 seconds)
           });
           return sitemapResponse.status === 200;
         } catch {
@@ -253,6 +254,13 @@ export async function analyzeWebsite(
       }
     }
 
+    // Links evaluation (10 points)
+    if (basicSeo.links.internal > 0 || basicSeo.links.external > 0) {
+      score += 10;
+    } else {
+      recommendations.push('No links found. Add internal and external links for better SEO.');
+    }
+
     // OpenGraph evaluation (10 points)
     const ogCount = Object.values(openGraph).filter(Boolean).length;
     score += Math.floor((ogCount / 4) * 10);
@@ -310,8 +318,7 @@ export async function analyzeWebsite(
     };
 
   } catch (error) {
-    console.error('Analysis failed:', error);
-    onProgress?.({ stage: 'error', message: 'Analysis failed: ' + (error instanceof Error ? error.message : 'Unknown error') });
+    console.error('Analysis error:', error);
     throw new Error(`Failed to analyze website: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

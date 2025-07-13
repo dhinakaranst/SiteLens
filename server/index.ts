@@ -9,6 +9,7 @@ import { checkSocialTags } from './routes/social-tags.js';
 import authRoutes from './routes/auth.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from 'axios';
+import compression from 'compression';
 
 dotenv.config();
 
@@ -20,6 +21,9 @@ const PORT = process.env.PORT || 3001;
 
 // Restore activeAnalyses for progress tracking
 const activeAnalyses = new Map<string, { progress: any; clients: Set<any> }>();
+
+// Enable compression for all responses
+app.use(compression());
 
 // Configure CORS for both development and production
 const allowedOrigins = [

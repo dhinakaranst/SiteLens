@@ -40,7 +40,7 @@ export const useSEOAnalysis = () => {
       const response = await axios.post(`${API_BASE_URL}/api/audit`, {
         url,
       }, {
-        timeout: 60000, // Increased timeout to 60 seconds
+        timeout: 30000, // Reduced from 60000 to 30000 (30 seconds)
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
