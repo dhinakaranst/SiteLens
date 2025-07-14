@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle } from 'lucide-react';
-import sitelensLogo from '../assets/sitelens_logo.png';
+import sitelensLogo from '../assets/sitelens_logo.webp';
 
 interface SeoAuditSectionsProps {
   user: any;

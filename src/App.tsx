@@ -11,7 +11,7 @@ import GoogleLoginComponent from './components/GoogleLogin';
 import UserProfile from './components/UserProfile';
 import SeoAuditSections from './components/SeoAuditSections';
 import { AlertCircle, Search, Hash, FileText, Share2, Rocket, Brain, CheckCircle, Zap, Shield, Download, User, Clock, Menu, X, ChevronDown, Globe } from 'lucide-react';
-import sitelensLogo from './assets/sitelens_logo.png';
+import sitelensLogo from './assets/sitelens_logo.webp';
 
 type ActiveTool = 'full-audit' | 'meta-checker' | 'headings-analyzer' | 'social-tags';
 
