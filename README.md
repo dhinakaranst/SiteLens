@@ -106,16 +106,18 @@ Identify missing tags for better social sharing.
 
 🏗️ Project Structure
 
-├── src/                  # Frontend (React, components, hooks, contexts)
-├── server/               # Backend (Express, routes, models, services)
-├── public/               # Static assets
-├── keep-alive.js         # Keep-alive script for Render free tier
-├── package.json          # Project metadata and scripts
-├── tailwind.config.js    # Tailwind CSS config
-├── AUTH_SETUP.md         # Google OAuth setup guide
-├── DEPLOYMENT_GUIDE.md   # Render deployment instructions
-├── RENDER_FREE_TIER_SETUP.md # Render free tier tips
-├── TROUBLESHOOTING.md    # Common issues and solutions
+📦 SEO Audit Tool (SiteLens)
+├── src/                        # Frontend (React, components, hooks, contexts)
+├── server/                     # Backend (Express, routes, models, services)
+├── public/                     # Static assets (favicons, robots.txt, etc.)
+├── keep-alive.js               # Keeps backend awake on Render free tier
+├── package.json                # Project metadata, dependencies, and scripts
+├── tailwind.config.js          # Tailwind CSS configuration
+├── AUTH_SETUP.md               # Google OAuth setup instructions
+├── DEPLOYMENT_GUIDE.md         # Deployment steps for Render
+├── RENDER_FREE_TIER_SETUP.md   # Render-specific tips for staying online
+├── TROUBLESHOOTING.md          # Common issues and debugging steps
+
 
 🚦 Deployment
 Render: See DEPLOYMENT_GUIDE.md and RENDER_FREE_TIER_SETUP.md for Render-specific instructions and keep-alive setup.
