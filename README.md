@@ -20,7 +20,7 @@ A modern, full-stack SEO analysis tool with AI-powered suggestions to improve yo
 
 ## 🖥️ Demo
 
-[> _Add a link to your deployed app here (e.g., Vercel, Render, etc.)_](https://seositelens.vercel.app/)
+(https://seositelens.vercel.app/)
 
 ---
 
@@ -35,6 +35,11 @@ A modern, full-stack SEO analysis tool with AI-powered suggestions to improve yo
 ---
 
 ## ✨ Screenshots
+
+<img width="1908" height="910" alt="image" src="https://github.com/user-attachments/assets/121b75b9-0f4c-4042-9cec-75f16dbaa075" />
+<img width="1458" height="911" alt="image" src="https://github.com/user-attachments/assets/499da434-ec49-4df6-9de4-aeb9cd946ac5" />
+<img width="1431" height="906" alt="image" src="https://github.com/user-attachments/assets/19981a2c-c226-4fbd-aa0a-23e59ed03103" />
+
 
 
 🛠️ Getting Started
