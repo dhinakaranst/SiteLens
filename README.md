@@ -15,7 +15,7 @@ A modern, full-stack SEO analysis tool with AI-powered suggestions to improve yo
 - **Google OAuth Authentication**: Secure login and user management.
 - **Responsive UI**: Beautiful, mobile-friendly interface with Tailwind CSS.
 - **Free & Pro Plans**: Flexible usage limits and premium features.
-
+- 
 ---
 
 ## 🖥️ Demo
