@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
 Sitemap: https://seositelens.vercel.app/seo-sitemap.xml
+ Disallow: /sitemap.xml
