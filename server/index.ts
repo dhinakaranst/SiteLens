@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from 'axios';
 import compression from 'compression';
+import seoAuditRoutes from './routes/seoAudit.js';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(compression());
 
 // Configure CORS for both development and production
 const allowedOrigins = [
+  'https://site-lens.tech',
   'https://seositelens.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000'
@@ -82,6 +84,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api', seoAuditRoutes);
 
 interface SEOReport {
   url: string;
