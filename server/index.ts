@@ -10,7 +10,7 @@ import authRoutes from './routes/auth.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from 'axios';
 import compression from 'compression';
-import seoAuditRoutes from './routes/seoAudit';
+import seoAuditRoutes from './routes/seoAudit.js';
 
 dotenv.config();
 
