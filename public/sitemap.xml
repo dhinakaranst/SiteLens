@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>https://dhinakaran.me/</loc>
+<loc>https://site-lens.tech/</loc>
 <lastmod>2024-06-07</lastmod>
 <changefreq>monthly</changefreq>
 <priority>1.0</priority>
 </url>
 <url>
-<loc>https://dhinakaran.me/projects</loc>
+<loc>https://site-lens.tech/projects</loc>
 <lastmod>2024-06-07</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.8</priority>
 </url>
 <url>
-<loc>https://dhinakaran.me/articles</loc>
+<loc>https://site-lens.tech/articles</loc>
 <lastmod>2024-06-07</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.8</priority>
 </url>
 <url>
-<loc>https://dhinakaran.me/contact</loc>
+<loc>https://site-lens.tech/contact</loc>
 <lastmod>2024-06-07</lastmod>
 <changefreq>yearly</changefreq>
 <priority>0.6</priority>

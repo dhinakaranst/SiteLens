@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://seositelens.vercel.app/seo-sitemap.xml
- Disallow: /sitemap.xml
+Sitemap: https://site-lens.tech/sitemap.xml
