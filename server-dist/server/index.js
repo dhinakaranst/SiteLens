@@ -93,8 +93,6 @@ app.get('/api/audit/progress', (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    // Create a unique ID for this client
-    const clientId = Date.now().toString();
     // Initialize or get the analysis session
     if (!activeAnalyses.has(url)) {
         activeAnalyses.set(url, { progress: { stage: 'initial', message: 'Starting analysis...' }, clients: new Set() });

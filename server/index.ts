@@ -8,7 +8,7 @@ import { analyzeHeadings } from './routes/headings.js';
 import { checkSocialTags } from './routes/social-tags.js';
 import authRoutes from './routes/auth.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import axios from 'axios';
+
 import compression from 'compression';
 
 dotenv.config();
@@ -19,8 +19,19 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Define progress tracking types
+interface AnalysisProgress {
+  stage: string;
+  message: string;
+}
+
+interface AnalysisSession {
+  progress: AnalysisProgress;
+  clients: Set<express.Response>;
+}
+
 // Restore activeAnalyses for progress tracking
-const activeAnalyses = new Map<string, { progress: any; clients: Set<any> }>();
+const activeAnalyses = new Map<string, AnalysisSession>();
 
 // Enable compression for all responses
 app.use(compression());
@@ -159,9 +170,6 @@ app.get('/api/audit/progress', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
-  // Create a unique ID for this client
-  const clientId = Date.now().toString();
-  
   // Initialize or get the analysis session
   if (!activeAnalyses.has(url)) {
     activeAnalyses.set(url, { progress: { stage: 'initial', message: 'Starting analysis...' }, clients: new Set() });
@@ -183,7 +191,7 @@ app.get('/api/audit/progress', (req, res) => {
 });
 
 // Helper function to broadcast progress to all clients
-const broadcastProgress = (url: string, progress: any) => {
+const broadcastProgress = (url: string, progress: AnalysisProgress) => {
   const session = activeAnalyses.get(url);
   if (session) {
     session.progress = progress;

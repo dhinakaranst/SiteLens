@@ -8,6 +8,8 @@ interface User {
   createdAt: string;
 }
 
+export type { User };
+
 interface AuthContextType {
   user: User | null;
   login: (userData: User) => void;

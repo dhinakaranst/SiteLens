@@ -18,7 +18,7 @@ const GoogleLoginComponent: React.FC = () => {
     isDevelopment: import.meta.env.DEV
   });
 
-  const handleSuccess = async (credentialResponse: any) => {
+  const handleSuccess = async (credentialResponse: { credential?: string }) => {
     setIsLoading(true);
     console.log('🚀 Starting Google OAuth login...');
     console.log('📡 API URL:', `${API_BASE_URL}/api/auth/google`);
@@ -34,33 +34,39 @@ const GoogleLoginComponent: React.FC = () => {
         login(response.data.user);
         console.log('✅ Login successful:', response.data.user.name);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Login failed:', error);
+      
+      // Type guard for axios error
+      const isAxiosError = (err: unknown): err is { code?: string; response?: { status?: number; statusText?: string; data?: unknown } } => {
+        return typeof err === 'object' && err !== null;
+      };
+
       console.error('🔍 Error details:', {
-        message: error?.message,
-        code: error?.code,
-        status: error?.response?.status,
-        statusText: error?.response?.statusText,
-        data: error?.response?.data
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: isAxiosError(error) ? error.code : undefined,
+        status: isAxiosError(error) ? error.response?.status : undefined,
+        statusText: isAxiosError(error) ? error.response?.statusText : undefined,
+        data: isAxiosError(error) ? error.response?.data : undefined
       });
       
       let errorMessage = 'Login failed. Please try again.';
       
-      if (error.code === 'ERR_NETWORK') {
+      if (isAxiosError(error) && error.code === 'ERR_NETWORK') {
         errorMessage = 'Network error. Please check if the server is running and try again.';
-      } else if (error.code === 'ECONNABORTED') {
+      } else if (isAxiosError(error) && error.code === 'ECONNABORTED') {
         errorMessage = 'Login timeout. Please check your connection and try again.';
-      } else if (error.response?.status === 408) {
+      } else if (isAxiosError(error) && error.response?.status === 408) {
         errorMessage = 'Authentication timeout. Please try again.';
-      } else if (error.response?.status === 401) {
+      } else if (isAxiosError(error) && error.response?.status === 401) {
         errorMessage = 'Invalid authentication. Please try again.';
-      } else if (error.response?.status === 403) {
+      } else if (isAxiosError(error) && error.response?.status === 403) {
         errorMessage = 'Access denied. Please check your Google OAuth configuration.';
-      } else if (error.response?.status === 404) {
+      } else if (isAxiosError(error) && error.response?.status === 404) {
         errorMessage = 'API endpoint not found. Please check server configuration.';
-      } else if (error.response?.data?.error) {
+      } else if (isAxiosError(error) && error.response?.data?.error) {
         errorMessage = error.response.data.error;
-      } else if (error?.message) {
+      } else if (error instanceof Error && error?.message) {
         errorMessage = error.message;
       }
       
@@ -73,9 +79,13 @@ const GoogleLoginComponent: React.FC = () => {
     }
   };
 
-  const handleError = (error?: any) => {
+  const handleError = (error?: unknown) => {
     console.error('Google login failed:', error);
-    alert(error?.message || error?.toString() || 'Google login failed. Please try again.');
+    const errorMessage = error instanceof Error ? error.message : 
+                        typeof error === 'object' && error !== null && 'toString' in error && typeof error.toString === 'function' ? 
+                        error.toString() : 
+                        'Google login failed. Please try again.';
+    alert(errorMessage);
   };
 
   if (isLoading) {
