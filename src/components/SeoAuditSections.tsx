@@ -1,14 +1,19 @@
 import React from 'react';
 import { CheckCircle } from 'lucide-react';
-import sitelensLogo from '../assets/sitelens_logo.webp';
 
-interface SeoAuditSectionsProps {
-  user: any;
-  setShowSEOAudit: (show: boolean) => void;
-  setShowLogin?: (show: boolean) => void;
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  picture?: string;
 }
 
-export default function SeoAuditSections({ user, setShowSEOAudit, setShowLogin }: SeoAuditSectionsProps) {
+interface SeoAuditSectionsProps {
+  user: User | null;
+  setShowSEOAudit: (show: boolean) => void;
+}
+
+export default function SeoAuditSections({ user, setShowSEOAudit }: SeoAuditSectionsProps) {
   return (
     <>
       {/* Feature Deep-Dive Sections */}

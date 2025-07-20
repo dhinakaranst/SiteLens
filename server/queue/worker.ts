@@ -17,3 +17,11 @@ const worker = new Worker(
     },
   }
 );
+
+worker.on('completed', job => {
+  console.log(`Job ${job.id} completed`);
+});
+
+worker.on('failed', (job, err) => {
+  console.log(`Job ${job?.id} failed:`, err);
+});
