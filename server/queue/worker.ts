@@ -3,6 +3,7 @@ import { performSEOCrawl } from '../services/seoAuditService.js';
 
 console.log('🔄 Worker is running and waiting for jobs...');
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const worker = new Worker(
   'seo-audit',
   async (job) => {
