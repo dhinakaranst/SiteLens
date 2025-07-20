@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"\\\"C:\\Program Files\\Redis\\redis-server.exe\\\"\" \"npx tsx server/index.ts\" \"npx tsx server/queue/worker.ts\"",
+    "dev": "concurrently \"npx tsx server/index.ts\" \"npx tsx server/queue/worker.ts\"",
     "dev:client": "vite",
     "dev:server": "tsx watch --tsconfig tsconfig.server.json server/index.ts",
     "build": "vite build",

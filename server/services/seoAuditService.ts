@@ -1,4 +1,4 @@
-import { auditQueue } from '../queue/auditQueue.js';
+import { auditQueue, isQueueAvailable } from '../queue/auditQueue.js';
 import AuditResult from '../models/AuditResult.js';
 import axios from "axios";
 import * as cheerio from "cheerio";
@@ -9,15 +9,25 @@ interface AuditJobData {
 }
 
 export async function enqueueAuditJob(data: AuditJobData) {
-  await auditQueue.add('audit', data, {
-    attempts: 3,
-    backoff: {
-      type: 'exponential',
-      delay: 3000,
-    },
-  });
-
-  console.log(`Audit job added for ${data.url}`);
+  if (isQueueAvailable && auditQueue) {
+    try {
+      await auditQueue.add('audit', data, {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 3000,
+        },
+      });
+      console.log(`✅ Audit job added to queue for ${data.url}`);
+      return;
+    } catch (error) {
+      console.warn('⚠️ Failed to add job to queue, processing directly:', error);
+    }
+  }
+  
+  // Fallback: process directly if queue is not available
+  console.log(`📝 Processing audit job directly for ${data.url}`);
+  await performSeoAudit(data.url, data.userId);
 }
 
 export async function performSeoAudit(url: string, userId: string) {
@@ -40,8 +50,21 @@ export async function performSeoAudit(url: string, userId: string) {
 }
 
 export async function performSEOCrawl(url: string) {
-  await auditQueue.add('seo-audit', { url });
-  console.log(`📩 Job added to queue for URL: ${url}`);
+  if (isQueueAvailable && auditQueue) {
+    try {
+      await auditQueue.add('seo-audit', { url });
+      console.log(`📩 Job added to queue for URL: ${url}`);
+      return;
+    } catch (error) {
+      console.warn('⚠️ Failed to add crawl job to queue, processing directly:', error);
+    }
+  }
+  
+  // Fallback: process directly if queue is not available
+  console.log(`📝 Processing SEO crawl directly for URL: ${url}`);
+  const result = await fetchSEOMetadata(url);
+  console.log('✅ SEO Crawl Result:', result);
+  return result;
 }
 
 // Rename the previous performSEOCrawl to fetchSEOMetadata for clarity
