@@ -27,7 +27,11 @@ router.post('/google', async (req, res) => {
             audience: process.env.VITE_GOOGLE_CLIENT_ID
         });
         const ticket = await Promise.race([verificationPromise, timeoutPromise]);
-        const payload = ticket.getPayload();
+        if (!ticket || typeof ticket === 'string') {
+            return res.status(400).json({ error: 'Token verification timeout or failed' });
+        }
+        const loginTicket = ticket;
+        const payload = loginTicket.getPayload();
         if (!payload) {
             return res.status(400).json({ error: 'Invalid token' });
         }
@@ -35,6 +39,9 @@ router.post('/google', async (req, res) => {
         // Check if user already exists with timeout
         const userPromise = User.findOne({ googleId });
         let user = await Promise.race([userPromise, timeoutPromise]);
+        if (typeof user === 'string') {
+            return res.status(500).json({ error: 'Database timeout' });
+        }
         if (!user) {
             // Create new user with timeout
             const newUser = new User({
@@ -44,6 +51,9 @@ router.post('/google', async (req, res) => {
                 picture
             });
             user = await Promise.race([newUser.save(), timeoutPromise]);
+            if (typeof user === 'string') {
+                return res.status(500).json({ error: 'Database timeout' });
+            }
         }
         // Return user data (without sensitive info)
         res.json({

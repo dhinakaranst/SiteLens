@@ -18,7 +18,7 @@ const GoogleLoginComponent: React.FC = () => {
     isDevelopment: import.meta.env.DEV
   });
 
-  const handleSuccess = async (credentialResponse: any) => {
+  const handleSuccess = async (credentialResponse: { credential?: string }) => {
     setIsLoading(true);
     console.log('🚀 Starting Google OAuth login...');
     console.log('📡 API URL:', `${API_BASE_URL}/api/auth/google`);
@@ -34,14 +34,15 @@ const GoogleLoginComponent: React.FC = () => {
         login(response.data.user);
         console.log('✅ Login successful:', response.data.user.name);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Login failed:', error);
+      const axiosError = error as { message?: string; code?: string; response?: { status?: number; statusText?: string; data?: unknown } };
       console.error('🔍 Error details:', {
-        message: error?.message,
-        code: error?.code,
-        status: error?.response?.status,
-        statusText: error?.response?.statusText,
-        data: error?.response?.data
+        message: axiosError?.message,
+        code: axiosError?.code,
+        status: axiosError?.response?.status,
+        statusText: axiosError?.response?.statusText,
+        data: axiosError?.response?.data
       });
       
       let errorMessage = 'Login failed. Please try again.';
@@ -73,9 +74,10 @@ const GoogleLoginComponent: React.FC = () => {
     }
   };
 
-  const handleError = (error?: any) => {
+  const handleError = (error?: unknown) => {
     console.error('Google login failed:', error);
-    alert(error?.message || error?.toString() || 'Google login failed. Please try again.');
+    const errorObj = error as { message?: string; toString?: () => string };
+    alert(errorObj?.message || errorObj?.toString?.() || 'Google login failed. Please try again.');
   };
 
   if (isLoading) {

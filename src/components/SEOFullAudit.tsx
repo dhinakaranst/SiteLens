@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSEOAnalysis, AnalysisProgress } from '../hooks/useSEOAnalysis';
-import { SEOReport } from '../types/seo';
-import { SEOReport as SEOReportDisplay } from './SEOReport';
+import { SEOReportDisplay } from './SEOReport';
 import { UrlInput } from './UrlInput';
 
 const getProgressColor = (stage: AnalysisProgress['stage']) => {
@@ -26,11 +25,9 @@ const getProgressColor = (stage: AnalysisProgress['stage']) => {
 };
 
 export const SEOFullAudit: React.FC = () => {
-  const [url, setUrl] = useState('');
   const { isLoading, progress, report, error, analyzeWebsite, resetReport } = useSEOAnalysis();
 
   const handleAnalyze = (urlToAnalyze: string) => {
-    setUrl(urlToAnalyze);
     analyzeWebsite(urlToAnalyze);
   };
 

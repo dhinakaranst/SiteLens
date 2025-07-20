@@ -3,7 +3,7 @@ import { performSEOCrawl } from '../services/seoAuditService.js';
 
 console.log('🔄 Worker is running and waiting for jobs...');
 
-const worker = new Worker(
+new Worker(
   'seo-audit',
   async (job) => {
     const { url } = job.data;

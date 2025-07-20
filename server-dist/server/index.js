@@ -15,7 +15,6 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 const app = express();
 const PORT = process.env.PORT || 3001;
-// Restore activeAnalyses for progress tracking
 const activeAnalyses = new Map();
 // Enable compression for all responses
 app.use(compression());
@@ -96,8 +95,6 @@ app.get('/api/audit/progress', (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    // Create a unique ID for this client
-    const clientId = Date.now().toString();
     // Initialize or get the analysis session
     if (!activeAnalyses.has(url)) {
         activeAnalyses.set(url, { progress: { stage: 'initial', message: 'Starting analysis...' }, clients: new Set() });

@@ -54,27 +54,7 @@ This project uses a job queue (BullMQ + Redis) to handle SEO audits asynchronous
 4. Check your worker logs for processing messages.
 5. Verify that the audit result is saved in MongoDB.
 
----
-=======
-# 🕵️‍♂️ SEO Audit Tool (SiteLens)
->>>>>>> 8bc4780b21c5205fd33171981984bd06ab800855
 
-A modern, full-stack SEO analysis tool with AI-powered suggestions to improve your website's SEO, meta tags, headings, and social media presence. Built with React, Express, TypeScript, and Google OAuth.
-
----
-
-## 🚀 Features
-
-- **Full SEO Audit**: Analyze any website for SEO best practices, performance, content structure, and technical issues.
-- **AI Recommendations**: Get actionable suggestions powered by Google Gemini AI.
-- **Meta Tags Checker**: Instantly check and optimize your site's title and meta description.
-- **Headings Analyzer**: Visualize and validate your heading structure (H1-H6).
-- **Social Media Tags Checker**: Ensure your OpenGraph and Twitter Card tags are set up for optimal sharing.
-- **PDF Reports**: Download professional SEO audit reports (Pro feature).
-- **Google OAuth Authentication**: Secure login and user management.
-- **Responsive UI**: Beautiful, mobile-friendly interface with Tailwind CSS.
-- **Free & Pro Plans**: Flexible usage limits and premium features.
-- 
 ---
 
 ## 🖥️ Demo
