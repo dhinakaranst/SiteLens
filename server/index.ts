@@ -2,21 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { analyzeWebsite } from './analyzer.js';
+import authRoutes from './routes/auth.js';
+import compression from 'compression';
+import seoAuditRoutes from './routes/seoAudit.js';
 import { checkMeta } from './routes/meta-check.js';
 import { analyzeHeadings } from './routes/headings.js';
 import { checkSocialTags } from './routes/social-tags.js';
-import authRoutes from './routes/auth.js';
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import axios from 'axios';
-import compression from 'compression';
-import seoAuditRoutes from './routes/seoAudit.js';
-import * as cheerio from 'cheerio';
 
 dotenv.config();
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
 // Check if Gemini API key is available
 if (!process.env.GEMINI_API_KEY) {
@@ -28,7 +21,7 @@ if (!process.env.GEMINI_API_KEY) {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Restore activeAnalyses for progress tracking
+// Progress tracking for real-time updates
 const activeAnalyses = new Map();
 
 // Enable compression for all responses
@@ -90,6 +83,18 @@ const connectDB = async () => {
 
 connectDB();
 
+// Initialize worker if Redis is available
+const initializeWorker = async () => {
+  try {
+    await import('./queue/worker.js');
+  } catch {
+    console.log('ℹ️ Worker initialization skipped (Redis not available)');
+  }
+};
+
+// Start worker
+initializeWorker();
+
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
@@ -97,4 +102,106 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api', seoAuditRoutes);
 
-// ... (rest of your code remains unchanged)
+// Progress tracking endpoint for real-time updates
+app.get('/api/audit/progress', (req, res) => {
+  const url = req.query.url as string;
+  
+  if (!url) {
+    return res.status(400).json({ error: 'URL is required' });
+  }
+
+  // Set headers for Server-Sent Events
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Cache-Control'
+  });
+
+  // Initialize analysis session if not exists
+  if (!activeAnalyses.has(url)) {
+    activeAnalyses.set(url, { 
+      progress: { stage: 'initial', message: 'Starting analysis...' }, 
+      clients: new Set() 
+    });
+  }
+
+  const session = activeAnalyses.get(url);
+  session.clients.add(res);
+
+  // Send initial progress
+  res.write(`data: ${JSON.stringify(session.progress)}\n\n`);
+
+  // Clean up on client disconnect
+  req.on('close', () => {
+    session.clients.delete(res);
+    if (session.clients.size === 0) {
+      activeAnalyses.delete(url);
+    }
+  });
+});
+
+// Helper function to broadcast progress to all clients
+const broadcastProgress = (url: string, progress: { stage: string; message: string }) => {
+  const session = activeAnalyses.get(url);
+  if (session) {
+    session.progress = progress;
+    session.clients.forEach((client: NodeJS.WritableStream) => {
+      try {
+        client.write(`data: ${JSON.stringify(progress)}\n\n`);
+      } catch {
+        // Client disconnected, remove from set
+        session.clients.delete(client);
+      }
+    });
+  }
+};
+
+// Additional SEO analysis routes
+app.post('/api/meta-check', async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+    const result = await checkMeta(url);
+    res.json(result);
+  } catch (error) {
+    console.error('Meta check error:', error);
+    res.status(500).json({ error: 'Failed to analyze meta tags' });
+  }
+});
+
+app.post('/api/headings', async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+    const result = await analyzeHeadings(url);
+    res.json(result);
+  } catch (error) {
+    console.error('Headings analysis error:', error);
+    res.status(500).json({ error: 'Failed to analyze headings' });
+  }
+});
+
+app.post('/api/social-tags', async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+    const result = await checkSocialTags(url);
+    res.json(result);
+  } catch (error) {
+    console.error('Social tags check error:', error);
+    res.status(500).json({ error: 'Failed to analyze social tags' });
+  }
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

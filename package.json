@@ -7,6 +7,7 @@
     "dev": "concurrently \"\\\"C:\\Program Files\\Redis\\redis-server.exe\\\"\" \"npx tsx server/index.ts\" \"npx tsx server/queue/worker.ts\"",
     "dev:client": "vite",
     "dev:server": "tsx watch --tsconfig tsconfig.server.json server/index.ts",
+    "dev:server:no-redis": "tsx watch --tsconfig tsconfig.server.json server/index.ts",
     "build": "vite build",
     "build:server": "npm install && tsc --project tsconfig.server.json",
     "start": "node server-dist/server/index.js",
