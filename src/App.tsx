@@ -352,11 +352,11 @@ const HomePage = ({
           
           {/* Internal Navigation */}
           <nav className="mb-8">
-            <div className="flex justify-center space-x-6 text-sm font-medium">
-              <a href="#features" className="text-blue-600 hover:text-blue-800 underline transition-colors">Features</a>
-              <a href="#how-it-works" className="text-blue-600 hover:text-blue-800 underline transition-colors">How It Works</a>
-              <a href="#seo-checks" className="text-blue-600 hover:text-blue-800 underline transition-colors">SEO Checks</a>
-              <a href="#benefits" className="text-blue-600 hover:text-blue-800 underline transition-colors">Benefits</a>
+            <div className="flex justify-center space-x-4 text-sm font-medium">
+              <a href="#features" className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 hover:text-blue-800 transition-all duration-200 no-underline">Features</a>
+              <a href="#how-it-works" className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 hover:text-purple-800 transition-all duration-200 no-underline">How It Works</a>
+              <a href="#seo-checks" className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 hover:text-green-800 transition-all duration-200 no-underline">SEO Checks</a>
+              <a href="#benefits" className="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 hover:text-orange-800 transition-all duration-200 no-underline">Benefits</a>
             </div>
           </nav>
           
@@ -436,6 +436,137 @@ const HomePage = ({
             <p className="text-black">Your data is never stored or shared.</p>
           </div>
         </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">Simple 3-step process to get your comprehensive SEO audit</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-blue-600">1</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Enter Your URL</h3>
+              <p className="text-gray-600">Simply paste your website URL into our analyzer</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-purple-600">2</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2">AI Analysis</h3>
+              <p className="text-gray-600">Our AI scans 22+ SEO factors in under 30 seconds</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-green-600">3</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Get Results</h3>
+              <p className="text-gray-600">Receive detailed report with actionable recommendations</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SEO Checks Section */}
+      <section id="seo-checks" className="py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Comprehensive SEO Checks</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">22+ essential SEO factors analyzed automatically</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-2">Basic SEO</h3>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Title Tag Optimization</li>
+                <li>• Meta Description</li>
+                <li>• URL Structure</li>
+                <li>• Heading Structure (H1-H6)</li>
+              </ul>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-2">Technical SEO</h3>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Page Speed Analysis</li>
+                <li>• Mobile Responsiveness</li>
+                <li>• SSL Certificate</li>
+                <li>• Robots.txt</li>
+              </ul>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-2">Content & Links</h3>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Content Analysis</li>
+                <li>• Internal Links</li>
+                <li>• Image Optimization</li>
+                <li>• Social Media Tags</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section id="benefits" className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Use SiteLens?</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">Everything you need to improve your search rankings</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="flex items-start space-x-4">
+              <div className="bg-green-100 rounded-lg p-2 mt-1">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold mb-2">Save Time & Money</h3>
+                <p className="text-gray-600">No need for expensive SEO tools or consultants. Get professional insights for free.</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-4">
+              <div className="bg-blue-100 rounded-lg p-2 mt-1">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold mb-2">Instant Results</h3>
+                <p className="text-gray-600">Get your complete SEO audit in under 30 seconds. No waiting around.</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-4">
+              <div className="bg-purple-100 rounded-lg p-2 mt-1">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold mb-2">AI-Powered Insights</h3>
+                <p className="text-gray-600">Get smart, actionable recommendations powered by advanced AI algorithms.</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-4">
+              <div className="bg-orange-100 rounded-lg p-2 mt-1">
+                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold mb-2">Privacy First</h3>
+                <p className="text-gray-600">Your data is never stored or shared. Complete privacy guaranteed.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
