@@ -9,6 +9,7 @@ import { checkSocialTags } from './routes/social-tags.js';
 import authRoutes from './routes/auth.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import compression from 'compression';
+import seoAuditRoutes from './routes/seoAudit.js';
 dotenv.config();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -20,6 +21,7 @@ const activeAnalyses = new Map();
 app.use(compression());
 // Configure CORS for both development and production
 const allowedOrigins = [
+    'https://site-lens.tech',
     'https://seositelens.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000'
@@ -70,6 +72,7 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 app.use('/api/auth', authRoutes);
+app.use('/api', seoAuditRoutes);
 async function generateAiRecommendations(report) {
     try {
         const prompt = `Based on the following SEO report for ${report.url}, provide actionable and concise optimization suggestions for improving its search engine ranking and user experience. Focus on practical advice. Structure your response as a numbered list of recommendations. If the current recommendations array already has items, you can expand on them or add new ones. Only provide the list, no introductory or concluding sentences. Do not mention the API key or any internal technical details. Here is the SEO report in JSON format: ${JSON.stringify(report)}`;
