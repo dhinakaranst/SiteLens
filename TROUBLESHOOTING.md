@@ -49,6 +49,15 @@ Open Developer Tools (F12) and look for:
 2. Verify MongoDB connection string
 3. Check server console for errors
 
+### **Issue: Redis Connection Error (ECONNREFUSED 127.0.0.1:6379)**
+**Symptoms:** Server shows Redis connection errors or fails to start
+
+**Solutions:**
+1. Redis is now optional - the application will work without it
+2. Jobs will be processed directly instead of being queued
+3. To use Redis (for better performance), set `REDIS_URL` environment variable
+4. For local development, install Redis or just ignore the warnings
+
 ### **Issue: MongoDB Connection Failed**
 **Symptoms:** Server won't start or login fails
 

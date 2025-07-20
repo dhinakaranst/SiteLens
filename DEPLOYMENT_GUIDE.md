@@ -20,6 +20,9 @@ In your Render dashboard, add these environment variables:
 
 - `NODE_ENV=production`
 - `RENDER_EXTERNAL_URL=https://your-app-name.onrender.com` (replace with your actual URL)
+- `MONGODB_URI=your-mongodb-connection-string`
+- `GEMINI_API_KEY=your-gemini-api-key`
+- `REDIS_URL=your-redis-url` (optional - for job queuing. If not provided, jobs will be processed directly)
 
 ## 3. Test the Deployment
 
