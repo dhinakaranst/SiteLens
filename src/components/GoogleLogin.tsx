@@ -18,7 +18,7 @@ const GoogleLoginComponent: React.FC = () => {
     isDevelopment: import.meta.env.DEV
   });
 
-  const handleSuccess = async (credentialResponse: any) => {
+  const handleSuccess = async (credentialResponse: { credential?: string }) => {
     setIsLoading(true);
     console.log('🚀 Starting Google OAuth login...');
     console.log('📡 API URL:', `${API_BASE_URL}/api/auth/google`);
@@ -34,33 +34,45 @@ const GoogleLoginComponent: React.FC = () => {
         login(response.data.user);
         console.log('✅ Login successful:', response.data.user.name);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Login failed:', error);
-      console.error('🔍 Error details:', {
-        message: error?.message,
-        code: error?.code,
-        status: error?.response?.status,
-        statusText: error?.response?.statusText,
-        data: error?.response?.data
-      });
+      
+      // Type guard for error object
+      const isErrorWithProperties = (err: unknown): err is { 
+        message?: string; 
+        code?: string; 
+        response?: { status?: number; statusText?: string; data?: unknown } 
+      } => {
+        return typeof err === 'object' && err !== null;
+      };
+      
+      if (isErrorWithProperties(error)) {
+        console.error('🔍 Error details:', {
+          message: error.message,
+          code: error.code,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data
+        });
+      }
       
       let errorMessage = 'Login failed. Please try again.';
       
-      if (error.code === 'ERR_NETWORK') {
+      if (isErrorWithProperties(error) && error.code === 'ERR_NETWORK') {
         errorMessage = 'Network error. Please check if the server is running and try again.';
-      } else if (error.code === 'ECONNABORTED') {
+      } else if (isErrorWithProperties(error) && error.code === 'ECONNABORTED') {
         errorMessage = 'Login timeout. Please check your connection and try again.';
-      } else if (error.response?.status === 408) {
+      } else if (isErrorWithProperties(error) && error.response?.status === 408) {
         errorMessage = 'Authentication timeout. Please try again.';
-      } else if (error.response?.status === 401) {
+      } else if (isErrorWithProperties(error) && error.response?.status === 401) {
         errorMessage = 'Invalid authentication. Please try again.';
-      } else if (error.response?.status === 403) {
+      } else if (isErrorWithProperties(error) && error.response?.status === 403) {
         errorMessage = 'Access denied. Please check your Google OAuth configuration.';
-      } else if (error.response?.status === 404) {
+      } else if (isErrorWithProperties(error) && error.response?.status === 404) {
         errorMessage = 'API endpoint not found. Please check server configuration.';
-      } else if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error?.message) {
+      } else if (isErrorWithProperties(error) && error.response?.data && typeof error.response.data === 'object' && 'error' in error.response.data) {
+        errorMessage = String(error.response.data.error);
+      } else if (isErrorWithProperties(error) && error.message) {
         errorMessage = error.message;
       }
       
@@ -73,9 +85,19 @@ const GoogleLoginComponent: React.FC = () => {
     }
   };
 
-  const handleError = (error?: any) => {
+  const handleError = (error?: unknown) => {
     console.error('Google login failed:', error);
-    alert(error?.message || error?.toString() || 'Google login failed. Please try again.');
+    
+    let message = 'Google login failed. Please try again.';
+    if (error && typeof error === 'object') {
+      if ('message' in error && typeof error.message === 'string') {
+        message = error.message;
+      } else if ('toString' in error && typeof error.toString === 'function') {
+        message = error.toString();
+      }
+    }
+    
+    alert(message);
   };
 
   if (isLoading) {
