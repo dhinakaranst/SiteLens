@@ -9,6 +9,7 @@ import { checkSocialTags } from './routes/social-tags.js';
 import authRoutes from './routes/auth.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import compression from 'compression';
+import seoAuditRoutes from './routes/seoAudit.js';
 dotenv.config();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -27,6 +28,7 @@ const activeAnalyses = new Map();
 app.use(compression());
 // Configure CORS for both development and production
 const allowedOrigins = [
+    'https://site-lens.tech',
     'https://seositelens.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000'
@@ -77,6 +79,7 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 app.use('/api/auth', authRoutes);
+app.use('/api', seoAuditRoutes);
 async function generateAiRecommendations(report) {
     try {
         // Check if Gemini API key is available
