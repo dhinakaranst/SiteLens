@@ -346,8 +346,19 @@ const HomePage = ({
     <main className="min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30">
       <section className="pt-20 pb-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in">SEO Analyzer</h1>
-          <p className="text-xl text-gray-600 mb-8 animate-fade-in">Scan your website in seconds. Get SEO scores, issues, and fixes with one click.</p>
+          <h1 className="text-5xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in">Free AI SEO Audit Tool</h1>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">Instant Website Analysis & Optimization</h2>
+          <p className="text-xl text-gray-600 mb-8 animate-fade-in">Scan your website in seconds. Get comprehensive SEO scores, identify critical issues, and receive AI-powered optimization recommendations with one click.</p>
+          
+          {/* Internal Navigation */}
+          <nav className="mb-8">
+            <div className="flex justify-center space-x-6 text-sm font-medium">
+              <a href="#features" className="text-blue-600 hover:text-blue-800 underline transition-colors">Features</a>
+              <a href="#how-it-works" className="text-blue-600 hover:text-blue-800 underline transition-colors">How It Works</a>
+              <a href="#seo-checks" className="text-blue-600 hover:text-blue-800 underline transition-colors">SEO Checks</a>
+              <a href="#benefits" className="text-blue-600 hover:text-blue-800 underline transition-colors">Benefits</a>
+            </div>
+          </nav>
           
           <form onSubmit={handleAuditSubmit} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-2">
             <input
@@ -372,8 +383,16 @@ const HomePage = ({
           <div className="text-blue-600 font-medium text-sm mt-2">100% free. No signup required. 3 free audits/day</div>
         </div>
       </section>
-      <section className="bg-gradient-to-br from-gray-50 via-blue-50/20 to-purple-50/20 py-16">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+      
+      {/* Features Section with proper H2 */}
+      <section id="features" className="bg-gradient-to-br from-gray-50 via-blue-50/20 to-purple-50/20 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose SiteLens for SEO Analysis?</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">Our comprehensive SEO audit tool provides everything you need to optimize your website for search engines and improve your rankings.</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in">
             <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
               <svg aria-hidden="true" className="w-8 h-8 text-blue-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
@@ -416,6 +435,7 @@ const HomePage = ({
             <h3 className="text-lg font-bold mb-1 text-black">Secure & Private</h3>
             <p className="text-black">Your data is never stored or shared.</p>
           </div>
+        </div>
         </div>
       </section>
     </main>
