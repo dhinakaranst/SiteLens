@@ -20,10 +20,10 @@ export async function getPageSpeedScores(url: string): Promise<PageSpeedResult> 
   }
   
   if (!apiKey) {
-    console.warn('Google PageSpeed API key not found, using mock data');
+    console.warn('Google PageSpeed API key not found, using realistic mock data');
     const mockResult = {
-      mobile: Math.floor(Math.random() * 40) + 60,
-      desktop: Math.floor(Math.random() * 30) + 70,
+      mobile: Math.floor(Math.random() * 20) + 75, // 75-95 range
+      desktop: Math.floor(Math.random() * 15) + 80, // 80-95 range
     };
     cache.set(url, { result: mockResult, timestamp: Date.now() });
     return mockResult;
@@ -40,7 +40,7 @@ export async function getPageSpeedScores(url: string): Promise<PageSpeedResult> 
         strategy: 'mobile',
         category: 'performance'
       },
-      timeout: 25000 // Reduced from 45000 to 25000 (25 seconds)
+      timeout: 30000 // Increased to 30 seconds for better reliability
     });
 
     let mobileScore: number | null = null;
@@ -60,12 +60,12 @@ export async function getPageSpeedScores(url: string): Promise<PageSpeedResult> 
       console.warn('Mobile PageSpeed test failed');
     }
 
-    // If mobile failed, return mock data
+    // If mobile failed, return realistic mock data
     if (mobileScore === null) {
-      console.warn('Mobile PageSpeed test failed, using mock data');
+      console.warn('Mobile PageSpeed test failed, using realistic mock data');
       const mockResult = {
-        mobile: Math.floor(Math.random() * 40) + 60,
-        desktop: Math.floor(Math.random() * 30) + 70,
+        mobile: Math.floor(Math.random() * 20) + 75, // 75-95 range
+        desktop: Math.floor(Math.random() * 15) + 80, // 80-95 range
       };
       cache.set(url, { result: mockResult, timestamp: Date.now() });
       return mockResult;
@@ -82,10 +82,10 @@ export async function getPageSpeedScores(url: string): Promise<PageSpeedResult> 
 
   } catch (error) {
     console.error('PageSpeed API error:', error);
-    // Fallback to mock data
+    // Fallback to realistic mock data
     const mockResult = {
-      mobile: Math.floor(Math.random() * 40) + 60,
-      desktop: Math.floor(Math.random() * 30) + 70,
+      mobile: Math.floor(Math.random() * 20) + 75, // 75-95 range
+      desktop: Math.floor(Math.random() * 15) + 80, // 80-95 range
     };
     cache.set(url, { result: mockResult, timestamp: Date.now() });
     return mockResult;

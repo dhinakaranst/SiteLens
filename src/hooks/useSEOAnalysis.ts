@@ -40,7 +40,7 @@ export const useSEOAnalysis = () => {
       const response = await axios.post(`${API_BASE_URL}/api/audit`, {
         url,
       }, {
-        timeout: 30000, // Reduced from 60000 to 30000 (30 seconds)
+        timeout: 60000, // Increased back to 60 seconds for better reliability
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -56,7 +56,15 @@ export const useSEOAnalysis = () => {
       setReport(response.data);
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.error || err.message);
+        if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
+          setError('Analysis timed out. The website might be slow or too large. Please try again or try a smaller website.');
+        } else if (err.response?.status === 404) {
+          setError('Server is starting up. Please wait a moment and try again. This can take up to 50 seconds on the free tier.');
+        } else if (err.response?.status === 503 || err.response?.status === 502) {
+          setError('Server is temporarily unavailable. Please try again in a few moments.');
+        } else {
+          setError(err.response?.data?.error || err.message);
+        }
       } else {
         setError('An unexpected error occurred');
       }

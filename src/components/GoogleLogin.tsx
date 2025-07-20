@@ -10,13 +10,15 @@ const GoogleLoginComponent: React.FC = () => {
   // Use the same API base URL configuration as other components
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
-  // Debug logging
-  console.log('🔧 Debug Info:', {
-    API_BASE_URL,
-    VITE_API_URL: import.meta.env.VITE_API_URL,
-    NODE_ENV: import.meta.env.MODE,
-    isDevelopment: import.meta.env.DEV
-  });
+  // Debug logging (only in development)
+  if (import.meta.env.DEV) {
+    console.log('🔧 Debug Info:', {
+      API_BASE_URL,
+      VITE_API_URL: import.meta.env.VITE_API_URL,
+      NODE_ENV: import.meta.env.MODE,
+      isDevelopment: import.meta.env.DEV
+    });
+  }
 
   const handleSuccess = async (credentialResponse: any) => {
     setIsLoading(true);

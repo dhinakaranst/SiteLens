@@ -22,12 +22,12 @@
     <!-- Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
-      connect-src 'self' https://sitelens-tsh9.onrender.com https://accounts.google.com https://www.google-analytics.com;
-      script-src 'self' 'unsafe-inline' https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com;
+      connect-src 'self' http://localhost:3001 https://sitelens-tsh9.onrender.com https://accounts.google.com https://www.google-analytics.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://www.google.com https://googleads.g.doubleclick.net;
+      script-src 'self' 'unsafe-inline' https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com https://s7.addthis.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://www.google.com;
       style-src 'self' 'unsafe-inline' https://accounts.google.com;
-      img-src 'self' data: https://www.google-analytics.com;
+      img-src 'self' data: https://www.google-analytics.com https://lh3.googleusercontent.com;
       font-src 'self' https://fonts.gstatic.com;
-      frame-src https://accounts.google.com;
+      frame-src https://accounts.google.com https://googleads.g.doubleclick.net https://ep2.adtrafficquality.google https://www.google.com;
     "/>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

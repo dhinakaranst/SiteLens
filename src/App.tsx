@@ -423,7 +423,7 @@ const HomePage = ({
 };
 
 function App() {
-  const { isLoading, report, error, analyzeWebsite: originalAnalyzeWebsite, resetReport } = useSEOAnalysis();
+  const { isLoading, progress, report, error, analyzeWebsite: originalAnalyzeWebsite, resetReport } = useSEOAnalysis();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('seo');
   const [showToast, setShowToast] = useState(false);
@@ -548,6 +548,46 @@ function App() {
     }
   };
 
+  // Show loading state with progress
+  if (isLoading && activeTab === 'seo') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full border border-blue-100">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <h2 className="text-xl font-semibold text-gray-900">Analyzing Website</h2>
+          </div>
+          {progress && progress.stage !== 'initial' && (
+            <div className="mb-6">
+              <p className="text-gray-600 mb-2">{progress.message}</p>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                  style={{ 
+                    width: progress.stage === 'fetching' ? '25%' : 
+                           progress.stage === 'analyzing' ? '50%' : 
+                           progress.stage === 'pagespeed' ? '75%' : 
+                           progress.stage === 'ai' ? '90%' : '100%' 
+                  }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                {progress.stage === 'fetching' ? 'Fetching website content...' :
+                 progress.stage === 'analyzing' ? 'Analyzing SEO elements...' :
+                 progress.stage === 'pagespeed' ? 'Running performance tests...' :
+                 progress.stage === 'ai' ? 'Generating AI recommendations...' :
+                 'Completing analysis...'}
+              </p>
+            </div>
+          )}
+          <p className="text-sm text-gray-500 text-center">
+            This may take up to 60 seconds for large websites
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (error && activeTab === 'seo') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
@@ -557,6 +597,14 @@ function App() {
             <h2 className="text-xl font-semibold text-gray-900">Analysis Failed</h2>
           </div>
           <p className="text-gray-600 mb-6">{error}</p>
+          {error.includes('timeout') && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+              <p className="text-sm text-yellow-800">
+                <strong>Tip:</strong> Try analyzing a smaller website or wait a few minutes before trying again. 
+                Large websites with many resources may take longer to analyze.
+              </p>
+            </div>
+          )}
           <div className="space-y-3">
             <button
               onClick={resetReport}

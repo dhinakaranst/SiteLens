@@ -53,6 +53,22 @@ const StatusIcon: React.FC<{ status: boolean }> = ({ status }) => {
 };
 
 export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
+  if (!report || !report.headings) {
+    return <div className="p-8 text-red-600">No report data available.</div>;
+  }
+  
+  // Ensure all required properties exist with fallbacks
+  const safeReport = {
+    ...report,
+    images: report.images || { total: 0, withAlt: 0, withoutAlt: 0, missingAltImages: [] },
+    links: report.links || { internal: 0, external: 0, broken: [] },
+    openGraph: report.openGraph || { hasOgTitle: false, hasOgDescription: false, hasOgImage: false, hasOgUrl: false },
+    twitterCard: report.twitterCard || { hasCardType: false, hasTitle: false, hasDescription: false, hasImage: false },
+    technical: report.technical || { hasRobotsTxt: false, hasSitemap: false, viewport: false, charset: false },
+    performance: report.performance || { mobile: null, desktop: null },
+    recommendations: report.recommendations || [],
+    aiRecommendations: report.aiRecommendations || []
+  };
   const { headings } = report;
   const totalHeadings = Object.values(headings).reduce((sum, count) => sum + count, 0);
 
@@ -150,7 +166,7 @@ export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
                 <h3 className="text-lg font-semibold text-gray-900">Mobile Performance</h3>
               </div>
               <div className="flex items-center space-x-4">
-                <ScoreCircle score={report.performance.mobile || 0} size="sm" />
+                <ScoreCircle score={safeReport.performance.mobile || 0} size="sm" />
                 <div>
                   <p className="text-sm text-gray-600">PageSpeed Score</p>
                   <p className="text-xs text-gray-500">Mobile optimization rating</p>
@@ -163,7 +179,7 @@ export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
                 <h3 className="text-lg font-semibold text-gray-900">Desktop Performance</h3>
               </div>
               <div className="flex items-center space-x-4">
-                <ScoreCircle score={report.performance.desktop || 0} size="sm" />
+                <ScoreCircle score={safeReport.performance.desktop || 0} size="sm" />
                 <div>
                   <p className="text-sm text-gray-600">PageSpeed Score</p>
                   <p className="text-xs text-gray-500">Desktop optimization rating</p>
@@ -209,18 +225,18 @@ export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Total Images</span>
-                  <span className="text-sm font-semibold text-gray-900">{report.images.total}</span>
+                  <span className="text-sm font-semibold text-gray-900">{safeReport.images.total}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">With Alt Text</span>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm font-semibold text-green-600">{report.images.withAlt}</span>
-                    <StatusIcon status={report.images.withoutAlt === 0} />
+                    <span className="text-sm font-semibold text-green-600">{safeReport.images.withAlt}</span>
+                    <StatusIcon status={safeReport.images.withoutAlt === 0} />
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Missing Alt Text</span>
-                  <span className={`text-sm font-semibold ${report.images.withoutAlt === 0 ? 'text-green-600' : 'text-red-600'}`}>{report.images.withoutAlt}</span>
+                  <span className={`text-sm font-semibold ${safeReport.images.withoutAlt === 0 ? 'text-green-600' : 'text-red-600'}`}>{safeReport.images.withoutAlt}</span>
                 </div>
               </div>
             </div>
@@ -233,17 +249,17 @@ export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Internal Links</span>
-                  <span className="text-sm font-semibold text-blue-600">{report.links.internal}</span>
+                  <span className="text-sm font-semibold text-blue-600">{safeReport.links.internal}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">External Links</span>
-                  <span className="text-sm font-semibold text-purple-600">{report.links.external}</span>
+                  <span className="text-sm font-semibold text-purple-600">{safeReport.links.external}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Broken Links</span>
                   <div className="flex items-center space-x-2">
-                    <span className={`text-sm font-semibold ${report.links.broken.length === 0 ? 'text-green-600' : 'text-red-600'}`}>{report.links.broken.length}</span>
-                    <StatusIcon status={report.links.broken.length === 0} />
+                    <span className={`text-sm font-semibold ${safeReport.links.broken.length === 0 ? 'text-green-600' : 'text-red-600'}`}>{safeReport.links.broken.length}</span>
+                    <StatusIcon status={safeReport.links.broken.length === 0} />
                   </div>
                 </div>
               </div>
@@ -258,23 +274,23 @@ export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-gray-700">OpenGraph</span>
-                    <span className="text-xs text-gray-500">{Object.values(report.openGraph).filter(Boolean).length}/4</span>
+                    <span className="text-xs text-gray-500">{Object.values(safeReport.openGraph).filter(Boolean).length}/4</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="flex items-center space-x-1">
-                      <StatusIcon status={report.openGraph.hasOgTitle} />
+                      <StatusIcon status={safeReport.openGraph.hasOgTitle} />
                       <span>Title</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <StatusIcon status={report.openGraph.hasOgDescription} />
+                      <StatusIcon status={safeReport.openGraph.hasOgDescription} />
                       <span>Description</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <StatusIcon status={report.openGraph.hasOgImage} />
+                      <StatusIcon status={safeReport.openGraph.hasOgImage} />
                       <span>Image</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <StatusIcon status={report.openGraph.hasOgUrl} />
+                      <StatusIcon status={safeReport.openGraph.hasOgUrl} />
                       <span>URL</span>
                     </div>
                   </div>
@@ -282,23 +298,23 @@ export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-gray-700">Twitter Card</span>
-                    <span className="text-xs text-gray-500">{Object.values(report.twitterCard).filter(Boolean).length}/4</span>
+                    <span className="text-xs text-gray-500">{Object.values(safeReport.twitterCard).filter(Boolean).length}/4</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="flex items-center space-x-1">
-                      <StatusIcon status={report.twitterCard.hasCardType} />
+                      <StatusIcon status={safeReport.twitterCard.hasCardType} />
                       <span>Card</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <StatusIcon status={report.twitterCard.hasTitle} />
+                      <StatusIcon status={safeReport.twitterCard.hasTitle} />
                       <span>Title</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <StatusIcon status={report.twitterCard.hasDescription} />
+                      <StatusIcon status={safeReport.twitterCard.hasDescription} />
                       <span>Description</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <StatusIcon status={report.twitterCard.hasImage} />
+                      <StatusIcon status={safeReport.twitterCard.hasImage} />
                       <span>Image</span>
                     </div>
                   </div>
@@ -315,19 +331,19 @@ export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="flex items-center space-x-2">
-                <StatusIcon status={report.technical.viewport} />
+                <StatusIcon status={safeReport.technical.viewport} />
                 <span className="text-sm text-gray-700">Viewport Meta</span>
               </div>
               <div className="flex items-center space-x-2">
-                <StatusIcon status={report.technical.charset} />
+                <StatusIcon status={safeReport.technical.charset} />
                 <span className="text-sm text-gray-700">Charset</span>
               </div>
               <div className="flex items-center space-x-2">
-                <StatusIcon status={report.technical.hasRobotsTxt} />
+                <StatusIcon status={safeReport.technical.hasRobotsTxt} />
                 <span className="text-sm text-gray-700">Robots.txt</span>
               </div>
               <div className="flex items-center space-x-2">
-                <StatusIcon status={report.technical.hasSitemap} />
+                <StatusIcon status={safeReport.technical.hasSitemap} />
                 <span className="text-sm text-gray-700">XML Sitemap</span>
               </div>
             </div>
@@ -340,7 +356,7 @@ export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
               <h3 className="text-lg font-semibold text-gray-900">Recommendations</h3>
             </div>
             <div className="space-y-3">
-              {report.recommendations.map((recommendation, index) => (
+              {safeReport.recommendations.map((recommendation, index) => (
                 <div key={index} className="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg border border-yellow-100">
                   <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-xs font-semibold text-yellow-800">{index + 1}</span>
@@ -352,14 +368,14 @@ export const SEOReport: React.FC<SEOReportProps> = ({ report, onBack }) => {
           </div>
 
           {/* AI Recommendations */}
-          {report.aiRecommendations && report.aiRecommendations.length > 0 && (
+          {safeReport.aiRecommendations && safeReport.aiRecommendations.length > 0 && (
             <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mt-6">
               <div className="flex items-center space-x-3 mb-4">
                 <Target className="w-6 h-6 text-indigo-600" />
                 <h3 className="text-lg font-semibold text-gray-900">AI-Powered Optimization Suggestions</h3>
               </div>
               <ul className="list-disc list-inside space-y-2 text-gray-700">
-                {report.aiRecommendations.map((rec: string, index: number) => (
+                {safeReport.aiRecommendations.map((rec: string, index: number) => (
                   <li key={index}>{rec}</li>
                 ))}
               </ul>

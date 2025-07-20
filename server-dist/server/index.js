@@ -12,6 +12,13 @@ import compression from 'compression';
 dotenv.config();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+// Check if Gemini API key is available
+if (!process.env.GEMINI_API_KEY) {
+    console.warn('⚠️ GEMINI_API_KEY not found. AI recommendations will not work.');
+} else {
+    console.log('✅ Gemini API key loaded successfully');
+}
 const app = express();
 const PORT = process.env.PORT || 3001;
 // Restore activeAnalyses for progress tracking
@@ -72,16 +79,69 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 async function generateAiRecommendations(report) {
     try {
+        // Check if Gemini API key is available
+        if (!process.env.GEMINI_API_KEY) {
+            console.warn('⚠️ No Gemini API key available, using fallback recommendations');
+            return generateFallbackRecommendations(report);
+        }
+        
+        console.log('🤖 Generating AI recommendations for:', report.url);
+        console.log('🤖 Report data:', {
+            title: report.title,
+            seoScore: report.seoScore,
+            performance: report.performance
+        });
+        
         const prompt = `Based on the following SEO report for ${report.url}, provide actionable and concise optimization suggestions for improving its search engine ranking and user experience. Focus on practical advice. Structure your response as a numbered list of recommendations. If the current recommendations array already has items, you can expand on them or add new ones. Only provide the list, no introductory or concluding sentences. Do not mention the API key or any internal technical details. Here is the SEO report in JSON format: ${JSON.stringify(report)}`;
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
-        return text.split('\n').filter(line => line.trim() !== '');
+        const recommendations = text.split('\n').filter(line => line.trim() !== '');
+        
+        console.log('🤖 AI recommendations generated successfully:', recommendations.length, 'items');
+        return recommendations;
     }
     catch (error) {
         console.error("Error generating AI recommendations:", error);
-        return ["Could not generate AI recommendations at this time."];
+        console.log('🔄 Falling back to basic recommendations');
+        return generateFallbackRecommendations(report);
     }
+}
+
+function generateFallbackRecommendations(report) {
+    const recommendations = [];
+    
+    if (!report.title || report.title.length < 30) {
+        recommendations.push('Add a descriptive title tag between 30-60 characters');
+    }
+    
+    if (!report.description || report.description.length < 120) {
+        recommendations.push('Add a compelling meta description between 120-160 characters');
+    }
+    
+    if (report.headings.h1 === 0) {
+        recommendations.push('Add exactly one H1 tag to your page');
+    } else if (report.headings.h1 > 1) {
+        recommendations.push('Use only one H1 tag per page for better SEO');
+    }
+    
+    if (report.images.total > 0 && report.images.withoutAlt > 0) {
+        recommendations.push('Add alt text to all images for better accessibility and SEO');
+    }
+    
+    if (report.performance.mobile && report.performance.mobile < 70) {
+        recommendations.push('Optimize your website for mobile performance');
+    }
+    
+    if (report.performance.desktop && report.performance.desktop < 70) {
+        recommendations.push('Improve desktop performance by optimizing images and reducing load times');
+    }
+    
+    if (recommendations.length === 0) {
+        recommendations.push('Your website follows good SEO practices. Keep monitoring and improving!');
+    }
+    
+    return recommendations;
 }
 // Progress tracking endpoint
 app.get('/api/audit/progress', (req, res) => {
