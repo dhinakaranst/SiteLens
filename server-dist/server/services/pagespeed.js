@@ -29,7 +29,7 @@ export async function getPageSpeedScores(url) {
                 strategy: 'mobile',
                 category: 'performance'
             },
-            timeout: 25000 // Reduced from 45000 to 25000 (25 seconds)
+            timeout: 30000 // Increased to 30 seconds for better reliability
         });
         let mobileScore = null;
         let desktopScore = null;
@@ -46,16 +46,16 @@ export async function getPageSpeedScores(url) {
         else {
             console.warn('Mobile PageSpeed test failed');
         }
-            // If mobile failed, return realistic mock data
-    if (mobileScore === null) {
-        console.warn('Mobile PageSpeed test failed, using realistic mock data');
-        const mockResult = {
-            mobile: Math.floor(Math.random() * 20) + 75, // 75-95 range
-            desktop: Math.floor(Math.random() * 15) + 80, // 80-95 range
-        };
-        cache.set(url, { result: mockResult, timestamp: Date.now() });
-        return mockResult;
-    }
+        // If mobile failed, return realistic mock data
+        if (mobileScore === null) {
+            console.warn('Mobile PageSpeed test failed, using realistic mock data');
+            const mockResult = {
+                mobile: Math.floor(Math.random() * 20) + 75, // 75-95 range
+                desktop: Math.floor(Math.random() * 15) + 80, // 80-95 range
+            };
+            cache.set(url, { result: mockResult, timestamp: Date.now() });
+            return mockResult;
+        }
         const result = {
             mobile: mobileScore,
             desktop: desktopScore

@@ -1,13 +1,32 @@
 import { Worker } from 'bullmq';
 import { performSEOCrawl } from '../services/seoAuditService.js';
-console.log('🔄 Worker is running and waiting for jobs...');
-const worker = new Worker('seo-audit', async (job) => {
-    const { url } = job.data;
-    const result = await performSEOCrawl(url);
-    console.log('✅ SEO Audit Result:', result);
-}, {
-    connection: {
-        host: 'localhost',
-        port: 6379,
-    },
-});
+let worker = null;
+const initializeWorker = async () => {
+    // Only create worker if REDIS_URL is provided
+    if (process.env.REDIS_URL) {
+        try {
+            console.log('🔄 Initializing worker with Redis...');
+            worker = new Worker('seo-audit', async (job) => {
+                const { url } = job.data;
+                const result = await performSEOCrawl(url);
+                console.log('✅ SEO Audit Result:', result);
+                return result;
+            }, {
+                connection: {
+                    url: process.env.REDIS_URL,
+                },
+            });
+            console.log('✅ Audit worker initialized with Redis');
+        }
+        catch (error) {
+            console.warn('⚠️ Failed to initialize audit worker:', error);
+            worker = null;
+        }
+    }
+    else {
+        console.log('ℹ️ No Redis available, audit worker disabled');
+    }
+};
+// Initialize worker
+initializeWorker().catch(console.error);
+export default worker;

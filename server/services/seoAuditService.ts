@@ -4,6 +4,48 @@ import * as cheerio from "cheerio";
 import { Queue } from 'bullmq';
 import { getPageSpeedScores } from './pagespeed.js';
 
+// Define SEO check interface
+interface SEOCheck {
+  category: string;
+  check: string;
+  status: 'good' | 'critical' | 'recommended';
+  message: string;
+  details?: string;
+}
+
+// Define keyword interface
+interface Keyword {
+  word: string;
+  count: number;
+}
+
+// Define data interface for SEO checks
+interface SEOData {
+  title: string;
+  description: string;
+  headings: { h1: number; h2: number; h3: number; };
+  totalImages: number;
+  imagesWithAlt: number;
+  internalLinks: number;
+  canonical: string;
+  noindex: boolean;
+  ogTags: { title: string; description: string; image: string; };
+  ogDuplicates: string[];
+  twitterTags: { card: string; title: string; description: string; };
+  hasStructuredData: boolean;
+  isHttps: boolean;
+  hasRobotsTxt: boolean;
+  hasSitemap: boolean;
+  wwwRedirectsCorrectly: boolean;
+  htmlSizeKb: number;
+  estimatedRequests: number;
+  isJsMinified: boolean;
+  isCssMinified: boolean;
+  responseTime: string;
+  h1Text: string;
+  keywords: Keyword[];
+}
+
 // Dynamic import for audit queue
 let auditQueue: Queue | null = null;
 
@@ -65,7 +107,7 @@ export async function performSEOCrawl(url: string) {
     console.log(`🔍 Starting comprehensive SEO analysis for: ${url}`);
     
     // Fetch the HTML content
-    const { data, headers, status } = await axios.get(url, { 
+    const { data, headers } = await axios.get(url, { 
       timeout: 15000,
       headers: {
         'User-Agent': 'SEO-Audit-Tool/1.0 (SiteLens)'
@@ -106,7 +148,7 @@ export async function performSEOCrawl(url: string) {
     const allLinks = $('a[href]');
     const internalLinks = allLinks.filter(function() {
       const href = $(this).attr('href');
-      return href && (href.startsWith('/') || href.includes(url.replace(/https?:\/\//, '')));
+      return !!(href && (href.startsWith('/') || href.includes(url.replace(/https?:\/\//, ''))));
     }).length;
     const externalLinks = allLinks.length - internalLinks;
 
@@ -121,7 +163,7 @@ export async function performSEOCrawl(url: string) {
     };
 
     // Check for duplicate Open Graph tags
-    const ogDuplicates = [];
+    const ogDuplicates: string[] = [];
     Object.keys(ogTags).forEach(tag => {
       const count = $(`meta[property="og:${tag}"]`).length;
       if (count > 1) ogDuplicates.push(`og:${tag}`);
@@ -173,7 +215,6 @@ export async function performSEOCrawl(url: string) {
     // Check for robots.txt and sitemap
     let hasRobotsTxt = false;
     let hasSitemap = false;
-    let robotsTxtContent = "";
     
     try {
       const baseUrl = new URL(url).origin;
@@ -181,7 +222,6 @@ export async function performSEOCrawl(url: string) {
       // Check robots.txt
       const robotsResponse = await axios.get(`${baseUrl}/robots.txt`, { timeout: 5000 });
       hasRobotsTxt = robotsResponse.status === 200 && robotsResponse.data.length > 0;
-      robotsTxtContent = robotsResponse.data;
     } catch {
       hasRobotsTxt = false;
     }
@@ -219,16 +259,19 @@ export async function performSEOCrawl(url: string) {
         ? url.replace('www.', '') 
         : url.replace('://', '://www.');
       
-      const redirectResponse = await axios.get(alternativeUrl, { 
+      await axios.get(alternativeUrl, { 
         timeout: 5000, 
         maxRedirects: 0,
         validateStatus: (status) => status >= 200 && status < 400
       });
       wwwRedirectsCorrectly = true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Check if it's a redirect (3xx status)
-      if (error.response && error.response.status >= 300 && error.response.status < 400) {
-        wwwRedirectsCorrectly = true;
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { status?: number } };
+        if (axiosError.response && axiosError.response.status && axiosError.response.status >= 300 && axiosError.response.status < 400) {
+          wwwRedirectsCorrectly = true;
+        }
       }
     }
 
@@ -357,14 +400,8 @@ function extractKeywords(text: string): Array<{word: string, count: number}> {
 }
 
 // Helper function to generate SEO checks
-function generateSEOChecks(data: any): Array<{
-  category: string,
-  check: string,
-  status: 'good' | 'critical' | 'recommended',
-  message: string,
-  details?: string
-}> {
-  const checks = [];
+function generateSEOChecks(data: SEOData): SEOCheck[] {
+  const checks: SEOCheck[] = [];
 
   // Basic SEO checks
   if (data.title) {
@@ -408,7 +445,7 @@ function generateSEOChecks(data: any): Array<{
   }
 
   // Check if keywords appear in title and description
-  const titleKeywords = data.keywords.slice(0, 5).some((kw: any) => 
+  const titleKeywords = data.keywords.slice(0, 5).some((kw: Keyword) => 
     data.title.toLowerCase().includes(kw.word) || data.description.toLowerCase().includes(kw.word)
   );
   

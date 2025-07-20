@@ -2,34 +2,32 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { analyzeWebsite } from './analyzer.js';
+import authRoutes from './routes/auth.js';
+import compression from 'compression';
+import seoAuditRoutes from './routes/seoAudit.js';
 import { checkMeta } from './routes/meta-check.js';
 import { analyzeHeadings } from './routes/headings.js';
 import { checkSocialTags } from './routes/social-tags.js';
-import authRoutes from './routes/auth.js';
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import compression from 'compression';
-import seoAuditRoutes from './routes/seoAudit.js';
 dotenv.config();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
 // Check if Gemini API key is available
 if (!process.env.GEMINI_API_KEY) {
     console.warn('⚠️ GEMINI_API_KEY not found. AI recommendations will not work.');
-} else {
+}
+else {
     console.log('✅ Gemini API key loaded successfully');
 }
 const app = express();
 const PORT = process.env.PORT || 3001;
-// Restore activeAnalyses for progress tracking
+// Progress tracking for real-time updates
 const activeAnalyses = new Map();
 // Enable compression for all responses
 app.use(compression());
-// Configure CORS for both development and production
+// -------------- CORS FIX START --------------
+// Add all allowed origins including your production Vercel URL
 const allowedOrigins = [
     'https://site-lens.tech',
     'https://seositelens.vercel.app',
+    'https://seositelens-ovr0l96mv-dhinakaransts-projects.vercel.app', // <--- ADD THIS LINE
     'http://localhost:5173',
     'http://localhost:3000'
 ];
@@ -58,6 +56,7 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
     next();
 });
+// -------------- CORS FIX END --------------
 app.use(express.json());
 const connectDB = async () => {
     try {
@@ -75,98 +74,48 @@ const connectDB = async () => {
     }
 };
 connectDB();
+// Initialize worker if Redis is available
+const initializeWorker = async () => {
+    try {
+        await import('./queue/worker.js');
+    }
+    catch {
+        console.log('ℹ️ Worker initialization skipped (Redis not available)');
+    }
+};
+// Start worker
+initializeWorker();
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 app.use('/api/auth', authRoutes);
 app.use('/api', seoAuditRoutes);
-async function generateAiRecommendations(report) {
-    try {
-        // Check if Gemini API key is available
-        if (!process.env.GEMINI_API_KEY) {
-            console.warn('⚠️ No Gemini API key available, using fallback recommendations');
-            return generateFallbackRecommendations(report);
-        }
-        
-        console.log('🤖 Generating AI recommendations for:', report.url);
-        console.log('🤖 Report data:', {
-            title: report.title,
-            seoScore: report.seoScore,
-            performance: report.performance
-        });
-        
-        const prompt = `Based on the following SEO report for ${report.url}, provide actionable and concise optimization suggestions for improving its search engine ranking and user experience. Focus on practical advice. Structure your response as a numbered list of recommendations. If the current recommendations array already has items, you can expand on them or add new ones. Only provide the list, no introductory or concluding sentences. Do not mention the API key or any internal technical details. Here is the SEO report in JSON format: ${JSON.stringify(report)}`;
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-        const recommendations = text.split('\n').filter(line => line.trim() !== '');
-        
-        console.log('🤖 AI recommendations generated successfully:', recommendations.length, 'items');
-        return recommendations;
-    }
-    catch (error) {
-        console.error("Error generating AI recommendations:", error);
-        console.log('🔄 Falling back to basic recommendations');
-        return generateFallbackRecommendations(report);
-    }
-}
-
-function generateFallbackRecommendations(report) {
-    const recommendations = [];
-    
-    if (!report.title || report.title.length < 30) {
-        recommendations.push('Add a descriptive title tag between 30-60 characters');
-    }
-    
-    if (!report.description || report.description.length < 120) {
-        recommendations.push('Add a compelling meta description between 120-160 characters');
-    }
-    
-    if (report.headings.h1 === 0) {
-        recommendations.push('Add exactly one H1 tag to your page');
-    } else if (report.headings.h1 > 1) {
-        recommendations.push('Use only one H1 tag per page for better SEO');
-    }
-    
-    if (report.images.total > 0 && report.images.withoutAlt > 0) {
-        recommendations.push('Add alt text to all images for better accessibility and SEO');
-    }
-    
-    if (report.performance.mobile && report.performance.mobile < 70) {
-        recommendations.push('Optimize your website for mobile performance');
-    }
-    
-    if (report.performance.desktop && report.performance.desktop < 70) {
-        recommendations.push('Improve desktop performance by optimizing images and reducing load times');
-    }
-    
-    if (recommendations.length === 0) {
-        recommendations.push('Your website follows good SEO practices. Keep monitoring and improving!');
-    }
-    
-    return recommendations;
-}
-// Progress tracking endpoint
+// Progress tracking endpoint for real-time updates
 app.get('/api/audit/progress', (req, res) => {
     const url = req.query.url;
     if (!url) {
         return res.status(400).json({ error: 'URL is required' });
     }
-    // Set headers for SSE
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    // Create a unique ID for this client
-    const clientId = Date.now().toString();
-    // Initialize or get the analysis session
+    // Set headers for Server-Sent Events
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Cache-Control'
+    });
+    // Initialize analysis session if not exists
     if (!activeAnalyses.has(url)) {
-        activeAnalyses.set(url, { progress: { stage: 'initial', message: 'Starting analysis...' }, clients: new Set() });
+        activeAnalyses.set(url, {
+            progress: { stage: 'initial', message: 'Starting analysis...' },
+            clients: new Set()
+        });
     }
     const session = activeAnalyses.get(url);
     session.clients.add(res);
     // Send initial progress
     res.write(`data: ${JSON.stringify(session.progress)}\n\n`);
-    // Handle client disconnect
+    // Clean up on client disconnect
     req.on('close', () => {
         session.clients.delete(res);
         if (session.clients.size === 0) {
@@ -179,155 +128,61 @@ const broadcastProgress = (url, progress) => {
     const session = activeAnalyses.get(url);
     if (session) {
         session.progress = progress;
-        session.clients.forEach(client => {
-            client.write(`data: ${JSON.stringify(progress)}\n\n`);
+        session.clients.forEach((client) => {
+            try {
+                client.write(`data: ${JSON.stringify(progress)}\n\n`);
+            }
+            catch {
+                // Client disconnected, remove from set
+                session.clients.delete(client);
+            }
         });
     }
 };
-// Existing full audit endpoint
-app.post('/api/audit', async (req, res) => {
-    const { url } = req.body;
-    if (!url) {
-        return res.status(400).json({ error: 'URL is required' });
-    }
-    // Validate URL format
-    const urlPattern = /^https?:\/\/.+/;
-    if (!urlPattern.test(url)) {
-        return res.status(400).json({ error: 'Invalid URL format. Please include http:// or https://' });
-    }
-    try {
-        // Initialize analysis session if not exists
-        if (!activeAnalyses.has(url)) {
-            activeAnalyses.set(url, { progress: { stage: 'initial', message: 'Starting analysis...' }, clients: new Set() });
-        }
-        // Update progress for fetching stage
-        broadcastProgress(url, { stage: 'fetching', message: 'Fetching website content...' });
-        // Start the analysis with progress updates
-        const report = await analyzeWebsite(url, (progress) => {
-            broadcastProgress(url, progress);
-        });
-        // Generate AI recommendations with progress updates
-        broadcastProgress(url, { stage: 'ai', message: 'Generating AI recommendations...' });
-        const aiRecs = await generateAiRecommendations(report);
-        const finalReport = { ...report, aiRecommendations: aiRecs };
-        // Mark as complete
-        broadcastProgress(url, { stage: 'complete', message: 'Analysis complete!' });
-        // Clean up the session after a delay
-        setTimeout(() => {
-            activeAnalyses.delete(url);
-        }, 5000);
-        res.json(finalReport);
-    }
-    catch (error) {
-        console.error('Audit error:', error);
-        broadcastProgress(url, {
-            stage: 'error',
-            message: error instanceof Error ? error.message : 'An unexpected error occurred'
-        });
-        res.status(500).json({
-            error: 'Failed to analyze website',
-            details: error instanceof Error ? error.message : 'Unknown error'
-        });
-    }
-});
-// New meta check endpoint
+// Additional SEO analysis routes
 app.post('/api/meta-check', async (req, res) => {
     try {
         const { url } = req.body;
         if (!url) {
             return res.status(400).json({ error: 'URL is required' });
         }
-        const urlPattern = /^https?:\/\/.+/;
-        if (!urlPattern.test(url)) {
-            return res.status(400).json({ error: 'Invalid URL format. Please include http:// or https://' });
-        }
         const result = await checkMeta(url);
         res.json(result);
     }
     catch (error) {
         console.error('Meta check error:', error);
-        res.status(500).json({
-            error: 'Failed to check meta tags',
-            details: error instanceof Error ? error.message : 'Unknown error'
-        });
+        res.status(500).json({ error: 'Failed to analyze meta tags' });
     }
 });
-// New headings analyzer endpoint
 app.post('/api/headings', async (req, res) => {
     try {
         const { url } = req.body;
         if (!url) {
             return res.status(400).json({ error: 'URL is required' });
         }
-        const urlPattern = /^https?:\/\/.+/;
-        if (!urlPattern.test(url)) {
-            return res.status(400).json({ error: 'Invalid URL format. Please include http:// or https://' });
-        }
         const result = await analyzeHeadings(url);
         res.json(result);
     }
     catch (error) {
         console.error('Headings analysis error:', error);
-        res.status(500).json({
-            error: 'Failed to analyze headings',
-            details: error instanceof Error ? error.message : 'Unknown error'
-        });
+        res.status(500).json({ error: 'Failed to analyze headings' });
     }
 });
-// New social tags checker endpoint
 app.post('/api/social-tags', async (req, res) => {
     try {
         const { url } = req.body;
         if (!url) {
             return res.status(400).json({ error: 'URL is required' });
         }
-        const urlPattern = /^https?:\/\/.+/;
-        if (!urlPattern.test(url)) {
-            return res.status(400).json({ error: 'Invalid URL format. Please include http:// or https://' });
-        }
         const result = await checkSocialTags(url);
         res.json(result);
     }
     catch (error) {
         console.error('Social tags check error:', error);
-        res.status(500).json({
-            error: 'Failed to check social tags',
-            details: error instanceof Error ? error.message : 'Unknown error'
-        });
+        res.status(500).json({ error: 'Failed to analyze social tags' });
     }
 });
-// Health check endpoint for Render
-app.get('/healthz', (req, res) => {
-    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-app.get('/health', (req, res) => {
-    res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
-// Wake-up endpoint to prevent spinning down
-app.get('/wake', (req, res) => {
-    console.log('🌅 Server woken up by external request');
-    res.json({
-        status: 'awake',
-        timestamp: new Date().toISOString(),
-        message: 'Server is active and ready to handle requests'
-    });
-});
-// Root endpoint for basic connectivity test
-app.get('/', (req, res) => {
-    res.json({
-        message: 'SEO Audit API is running',
-        version: '1.0.0',
-        timestamp: new Date().toISOString(),
-        endpoints: [
-            'POST /api/audit - Full SEO audit',
-            'POST /api/meta-check - Meta title & description checker',
-            'POST /api/headings - Headings analyzer',
-            'POST /api/social-tags - Social media tags checker',
-            'GET /health - Health check',
-            'GET /wake - Wake up server'
-        ]
-    });
-});
+// Start the server
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
