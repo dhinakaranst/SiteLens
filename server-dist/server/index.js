@@ -18,6 +18,36 @@ else {
 }
 const app = express();
 const PORT = process.env.PORT || 3001;
+// Health check endpoints - CRITICAL for Render deployment
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        service: 'SiteLens API'
+    });
+});
+app.get('/healthz', (req, res) => {
+    res.status(200).json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        service: 'SiteLens API'
+    });
+});
+// Root endpoint
+app.get('/', (req, res) => {
+    res.status(200).json({
+        message: 'SiteLens API Server',
+        version: '1.0.0',
+        status: 'running',
+        endpoints: {
+            health: '/health',
+            healthz: '/healthz',
+            audit: '/api/audit'
+        }
+    });
+});
 // Progress tracking for real-time updates
 const activeAnalyses = new Map();
 // Enable compression for all responses
@@ -83,13 +113,25 @@ const initializeWorker = async () => {
         console.log('ℹ️ Worker initialization skipped (Redis not available)');
     }
 };
-// Start worker
-initializeWorker();
-app.get('/health', (req, res) => {
-    res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
 app.use('/api/auth', authRoutes);
 app.use('/api', seoAuditRoutes);
+// Error handling middleware
+app.use((err, req, res, _next) => {
+    console.error('Error:', err);
+    res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+        message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    });
+});
+// 404 handler
+app.use('*', (req, res) => {
+    res.status(404).json({
+        success: false,
+        error: 'Not found',
+        message: `Route ${req.originalUrl} not found`
+    });
+});
 // Progress tracking endpoint for real-time updates
 app.get('/api/audit/progress', (req, res) => {
     const url = req.query.url;
@@ -183,6 +225,33 @@ app.post('/api/social-tags', async (req, res) => {
     }
 });
 // Start the server
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+const startServer = async () => {
+    try {
+        // Initialize worker first
+        await initializeWorker();
+        // Ensure PORT is a number
+        const port = typeof PORT === 'string' ? parseInt(PORT, 10) : PORT;
+        // Start server with proper host binding for Render
+        app.listen(port, '0.0.0.0', () => {
+            console.log(`🚀 Server running on port ${port}`);
+            console.log(`📍 Health check available at: http://localhost:${port}/healthz`);
+            console.log(`📍 API available at: http://localhost:${port}/api/audit`);
+            console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+        });
+    }
+    catch (error) {
+        console.error('❌ Failed to start server:', error);
+        process.exit(1);
+    }
+};
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('🔄 Received SIGTERM, shutting down gracefully');
+    process.exit(0);
 });
+process.on('SIGINT', () => {
+    console.log('🔄 Received SIGINT, shutting down gracefully');
+    process.exit(0);
+});
+// Start the server
+startServer();
