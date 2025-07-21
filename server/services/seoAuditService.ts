@@ -803,12 +803,10 @@ async function generateAIRecommendations(url: string, seoData: {
       model: 'llama-3.1-sonar-small-128k-online',
       messages: [
         {
-          role: 'system',
-          content: 'You are an SEO expert. Provide actionable SEO recommendations in JSON array format.'
-        },
-        {
           role: 'user',
-          content: prompt
+          content: `You are an SEO expert. Based on the following website analysis, provide 3-5 specific, actionable SEO recommendations. Return only a JSON array of strings.
+
+${prompt}`
         }
       ],
       max_tokens: 500,
