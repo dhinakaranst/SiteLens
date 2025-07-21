@@ -11,11 +11,11 @@ import { checkSocialTags } from './routes/social-tags.js';
 
 dotenv.config();
 
-// Check if Gemini API key is available
-if (!process.env.GEMINI_API_KEY) {
-  console.warn('⚠️ GEMINI_API_KEY not found. AI recommendations will not work.');
+// Check if Perplexity API key is available
+if (!process.env.PERPLEXITY_API_KEY) {
+  console.warn('⚠️ PERPLEXITY_API_KEY not found. AI recommendations will not work.');
 } else {
-  console.log('✅ Gemini API key loaded successfully');
+  console.log('✅ Perplexity API key loaded successfully');
 }
 
 const app = express();

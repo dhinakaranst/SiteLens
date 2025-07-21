@@ -776,14 +776,9 @@ async function generateAIRecommendations(url: string, seoData: {
   twitterImage: string;
 }) {
   try {
-    const { GoogleGenerativeAI } = await import("@google/generative-ai");
-    
-    if (!process.env.GEMINI_API_KEY) {
-      return ["AI recommendations unavailable - Gemini API key not configured"];
+    if (!process.env.PERPLEXITY_API_KEY) {
+      return ["AI recommendations unavailable - Perplexity API key not configured"];
     }
-
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
     Analyze this website's SEO data and provide 3-5 actionable recommendations:
@@ -804,22 +799,43 @@ async function generateAIRecommendations(url: string, seoData: {
     Focus on the most important issues first.
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = result.response.text();
+    const response = await axios.post('https://api.perplexity.ai/chat/completions', {
+      model: 'llama-3.1-sonar-small-128k-online',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an SEO expert. Provide actionable SEO recommendations in JSON array format.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      max_tokens: 500,
+      temperature: 0.2
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.PERPLEXITY_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 10000
+    });
+    
+    const aiResponse = response.data.choices[0]?.message?.content || '';
     
     try {
       // Try to parse as JSON
-      const recommendations = JSON.parse(response);
-      return Array.isArray(recommendations) ? recommendations : [response];
+      const recommendations = JSON.parse(aiResponse);
+      return Array.isArray(recommendations) ? recommendations : [aiResponse];
     } catch {
       // If not JSON, split by lines and clean up
-      const lines = response.split('\n')
-        .filter(line => line.trim().length > 0)
-        .map(line => line.replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, '').trim())
-        .filter(line => line.length > 0 && !line.startsWith('```') && !line.startsWith('[') && !line.startsWith(']'))
+      const lines = aiResponse.split('\n')
+        .filter((line: string) => line.trim().length > 0)
+        .map((line: string) => line.replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, '').trim())
+        .filter((line: string) => line.length > 0 && !line.startsWith('```') && !line.startsWith('[') && !line.startsWith(']'))
         .slice(0, 5);
       
-      return lines.length > 0 ? lines : [`Unable to generate AI recommendations: ${response.substring(0, 100)}...`];
+      return lines.length > 0 ? lines : [`Unable to generate AI recommendations: ${aiResponse.substring(0, 100)}...`];
     }
   } catch (error) {
     console.error('AI recommendations error:', error);
