@@ -27,8 +27,13 @@ router.post('/audit', async (req, res) => {
       timeoutPromise
     ]);
     
+    // Check if report has error property
     if (report && typeof report === 'object' && 'error' in report && report.error) {
-      return res.status(500).json({ error: report.error, message: report.message });
+      const errorReport = report as { error: unknown; message?: string };
+      return res.status(500).json({ 
+        error: errorReport.error, 
+        message: errorReport.message || 'An error occurred during SEO analysis'
+      });
     }
     
     console.log(`SEO audit completed for: ${url}`);
