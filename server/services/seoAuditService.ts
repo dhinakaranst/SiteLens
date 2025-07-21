@@ -106,12 +106,14 @@ export async function performSEOCrawl(url: string) {
   try {
     console.log(`🔍 Starting comprehensive SEO analysis for: ${url}`);
     
-    // Fetch the HTML content
+    // Fetch the HTML content with increased timeout
     const { data, headers } = await axios.get(url, { 
-      timeout: 15000,
+      timeout: 30000, // Increased from 15000 to 30000 (30 seconds)
       headers: {
         'User-Agent': 'SEO-Audit-Tool/1.0 (SiteLens)'
-      }
+      },
+      maxRedirects: 5,
+      validateStatus: (status: number) => status < 400
     });
 
     // Load HTML into Cheerio
@@ -220,7 +222,7 @@ export async function performSEOCrawl(url: string) {
       const baseUrl = new URL(url).origin;
       
       // Check robots.txt
-      const robotsResponse = await axios.get(`${baseUrl}/robots.txt`, { timeout: 5000 });
+      const robotsResponse = await axios.get(`${baseUrl}/robots.txt`, { timeout: 10000 }); // Increased from 5000 to 10000
       hasRobotsTxt = robotsResponse.status === 200 && robotsResponse.data.length > 0;
     } catch {
       hasRobotsTxt = false;
@@ -238,7 +240,7 @@ export async function performSEOCrawl(url: string) {
       
       for (const sitemapUrl of sitemapUrls) {
         try {
-          const sitemapResponse = await axios.get(sitemapUrl, { timeout: 5000 });
+          const sitemapResponse = await axios.get(sitemapUrl, { timeout: 10000 }); // Increased from 5000 to 10000
           if (sitemapResponse.status === 200 && (sitemapResponse.data.includes('sitemap') || sitemapResponse.data.includes('<?xml'))) {
             hasSitemap = true;
             break;
@@ -260,7 +262,7 @@ export async function performSEOCrawl(url: string) {
         : url.replace('://', '://www.');
       
       await axios.get(alternativeUrl, { 
-        timeout: 5000, 
+        timeout: 10000, // Increased from 5000 to 10000 
         maxRedirects: 0,
         validateStatus: (status) => status >= 200 && status < 400
       });

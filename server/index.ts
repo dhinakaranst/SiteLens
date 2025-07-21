@@ -256,12 +256,18 @@ const startServer = async () => {
     const port = typeof PORT === 'string' ? parseInt(PORT, 10) : PORT;
     
     // Start server with proper host binding for Render
-    app.listen(port, '0.0.0.0', () => {
+    const server = app.listen(port, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${port}`);
       console.log(`📍 Health check available at: http://localhost:${port}/healthz`);
       console.log(`📍 API available at: http://localhost:${port}/api/audit`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
+
+    // Set server timeout to handle long-running requests (2 minutes)
+    server.timeout = 120000;
+    server.keepAliveTimeout = 120000;
+    server.headersTimeout = 120000;
+    
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     process.exit(1);
