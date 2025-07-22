@@ -294,7 +294,7 @@ export async function performSEOCrawl(url: string) {
     
     const overallScore = Math.round((passedChecks / totalChecks) * 100);
 
-    // Generate AI recommendations using Gemini
+    // Generate AI recommendations using Perplexity API with specific audit results
     const aiRecommendations = await generateAIRecommendations(url, {
       title, description, headings, totalImages, imagesMissingAlt,
       hasViewport: !!viewport, hasCharset: !!charset,
@@ -302,7 +302,7 @@ export async function performSEOCrawl(url: string) {
       ogImage: ogTags.image, ogUrl: ogTags.url,
       twitterCard: twitterTags.card, twitterTitle: twitterTags.title, 
       twitterDescription: twitterTags.description, twitterImage: twitterTags.image
-    });
+    }, seoChecks, overallScore);
 
     console.log(`✅ Comprehensive SEO analysis completed for: ${url}`);
 
@@ -774,70 +774,114 @@ async function generateAIRecommendations(url: string, seoData: {
   twitterTitle: string;
   twitterDescription: string;
   twitterImage: string;
-}) {
+}, auditChecks?: SEOCheck[], overallScore?: number) {
   try {
     if (!process.env.PERPLEXITY_API_KEY) {
       return ["AI recommendations unavailable - Perplexity API key not configured"];
     }
 
-    const prompt = `
-    Analyze this website's SEO data and provide 3-5 actionable recommendations:
-    
-    URL: ${url}
-    Title: "${seoData.title}" (${seoData.title?.length || 0} characters)
-    Description: "${seoData.description}" (${seoData.description?.length || 0} characters)
-    
-    Headings: H1(${seoData.headings?.h1 || 0}), H2(${seoData.headings?.h2 || 0}), H3(${seoData.headings?.h3 || 0})
-    Images: ${seoData.totalImages} total, ${seoData.imagesMissingAlt} missing alt text
-    
-    Technical: Viewport(${seoData.hasViewport}), Charset(${seoData.hasCharset})
-    OpenGraph: Title(${!!seoData.ogTitle}), Description(${!!seoData.ogDescription}), Image(${!!seoData.ogImage})
-    
-    Provide specific, actionable SEO recommendations in a JSON array format like:
-    ["Recommendation 1", "Recommendation 2", "Recommendation 3"]
-    
-    Focus on the most important issues first.
-    `;
+    // Find the critical and recommended issues from the audit
+    const criticalIssues = auditChecks?.filter(check => check.status === 'critical') || [];
+    const recommendedIssues = auditChecks?.filter(check => check.status === 'recommended') || [];
 
-    const response = await axios.post('https://api.perplexity.ai/chat/completions', {
-      model: 'sonar-pro',
-      messages: [
-        {
-          role: 'user',
-          content: `You are an SEO expert. Based on the following website analysis, provide 3-5 specific, actionable SEO recommendations. Return only a JSON array of strings.
-
-${prompt}`
-        }
-      ],
-      max_tokens: 500,
-      temperature: 0.2
-    }, {
-      headers: {
-        'Authorization': `Bearer ${process.env.PERPLEXITY_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      timeout: 10000
-    });
-    
-    const aiResponse = response.data.choices[0]?.message?.content || '';
-    
-    try {
-      // Try to parse as JSON
-      const recommendations = JSON.parse(aiResponse);
-      return Array.isArray(recommendations) ? recommendations : [aiResponse];
-    } catch {
-      // If not JSON, split by lines and clean up
-      const lines = aiResponse.split('\n')
-        .filter((line: string) => line.trim().length > 0)
-        .map((line: string) => line.replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, '').trim())
-        .filter((line: string) => line.length > 0 && !line.startsWith('```') && !line.startsWith('[') && !line.startsWith(']'))
-        .slice(0, 5);
-      
-      return lines.length > 0 ? lines : [`Unable to generate AI recommendations: ${aiResponse.substring(0, 100)}...`];
+    // If no issues found, provide a positive message
+    if (criticalIssues.length === 0 && recommendedIssues.length === 0) {
+      return [
+        `Excellent! Your website scored ${overallScore}/100 with no critical issues found.`,
+        "All major SEO elements are properly implemented on your site.",
+        "Consider monitoring your site regularly to maintain this high SEO standard."
+      ];
     }
+
+    // Generate specific recommendations based on actual audit findings
+    const recommendations: string[] = [];
+
+    // Handle critical issues first
+    criticalIssues.forEach(issue => {
+      if (issue.check === 'H1 Tag') {
+        if (seoData.headings?.h1 === 0) {
+          recommendations.push(`CRITICAL: Add exactly one H1 tag to your page - currently you have none. This is essential for SEO.`);
+        } else if (seoData.headings && seoData.headings.h1 > 1) {
+          recommendations.push(`CRITICAL: You have ${seoData.headings.h1} H1 tags but should have exactly one. Remove ${seoData.headings.h1 - 1} H1 tags.`);
+        }
+      }
+      
+      if (issue.check === 'SEO Title Length' && seoData.title) {
+        if (seoData.title.length === 0) {
+          recommendations.push(`CRITICAL: Add a title tag to your page - currently missing completely.`);
+        } else if (seoData.title.length < 30) {
+          recommendations.push(`CRITICAL: Your title "${seoData.title}" is only ${seoData.title.length} characters. Expand it to 30-60 characters for better SEO.`);
+        } else if (seoData.title.length > 60) {
+          recommendations.push(`CRITICAL: Your title is ${seoData.title.length} characters long. Shorten it to 30-60 characters to avoid truncation in search results.`);
+        }
+      }
+
+      if (issue.check === 'Meta Description Length' && seoData.description !== undefined) {
+        if (seoData.description.length === 0) {
+          recommendations.push(`CRITICAL: Add a meta description to your page - currently missing completely.`);
+        } else if (seoData.description.length < 120) {
+          recommendations.push(`CRITICAL: Your meta description is only ${seoData.description.length} characters. Expand it to 120-160 characters.`);
+        } else if (seoData.description.length > 160) {
+          recommendations.push(`CRITICAL: Your meta description is ${seoData.description.length} characters long. Shorten it to 120-160 characters to avoid truncation.`);
+        }
+      }
+
+      if (issue.check === 'Image Alt Attributes' && seoData.imagesMissingAlt > 0) {
+        recommendations.push(`CRITICAL: Add alt text to ${seoData.imagesMissingAlt} images that are missing alt attributes.`);
+      }
+
+      if (issue.check === 'HTTPS') {
+        recommendations.push(`CRITICAL: Switch your website from HTTP to HTTPS for security and SEO benefits.`);
+      }
+
+      if (issue.check === 'Indexability') {
+        recommendations.push(`CRITICAL: Remove the noindex directive from your page so search engines can index it.`);
+      }
+    });
+
+    // Handle recommended improvements
+    recommendedIssues.forEach(issue => {
+      if (issue.check === 'H2 Tags' && seoData.headings?.h2 === 0) {
+        recommendations.push(`Add H2 headings to structure your content better - currently you have none.`);
+      }
+
+      if (issue.check === 'Internal Links') {
+        recommendations.push(`Add more internal links to other pages on your site - currently you have very few.`);
+      }
+
+      if (issue.check === 'Canonical Link') {
+        recommendations.push(`Add a canonical link tag to prevent duplicate content issues.`);
+      }
+
+      if (issue.check === 'Open Graph Tags') {
+        const missing = [];
+        if (!seoData.ogTitle) missing.push('title');
+        if (!seoData.ogDescription) missing.push('description');
+        if (!seoData.ogImage) missing.push('image');
+        if (missing.length > 0) {
+          recommendations.push(`Add missing Open Graph tags for social media: ${missing.join(', ')}.`);
+        }
+      }
+
+      if (issue.check === 'Structured Data') {
+        recommendations.push(`Add Schema.org structured data to help search engines understand your content better.`);
+      }
+
+      if (issue.check === 'XML Sitemap') {
+        recommendations.push(`Create and submit an XML sitemap to help search engines discover all your pages.`);
+      }
+
+      if (issue.check === 'Robots.txt') {
+        recommendations.push(`Add a robots.txt file to guide search engine crawlers.`);
+      }
+    });
+
+    // Limit to top 5 most important recommendations
+    return recommendations.slice(0, 5);
+
   } catch (error) {
     console.error('AI recommendations error:', error);
-    return [`Unable to generate AI recommendations: ${error instanceof Error ? error.message : 'Unknown error'}`];
+    return [`Unable to generate specific recommendations from audit data`];
   }
 }
 
