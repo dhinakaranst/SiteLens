@@ -854,7 +854,7 @@ async function generateAIRecommendations(url: string, seoData: {
       }
 
       if (issue.check === 'Open Graph Tags') {
-        const missing = [];
+        const missing: string[] = [];
         if (!seoData.ogTitle) missing.push('title');
         if (!seoData.ogDescription) missing.push('description');
         if (!seoData.ogImage) missing.push('image');
