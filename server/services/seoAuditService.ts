@@ -754,6 +754,110 @@ function generateSEOChecks(data: SEOData): SEOCheck[] {
     message: 'Google has not flagged this site for malware.'
   });
 
+  // Additional SEO checks for more comprehensive analysis
+  
+  // Content quality checks
+  if (data.title && data.description) {
+    const titleWords = data.title.split(' ').length;
+    const descWords = data.description.split(' ').length;
+    
+    checks.push({
+      category: 'Content Quality',
+      check: 'Title Word Count',
+      status: titleWords >= 5 && titleWords <= 10 ? 'good' as const : 'recommended' as const,
+      message: titleWords >= 5 && titleWords <= 10 
+        ? `Title has optimal word count (${titleWords} words).`
+        : `Title has ${titleWords} words. Aim for 5-10 words for better SEO.`
+    });
+
+    checks.push({
+      category: 'Content Quality',
+      check: 'Description Word Count',
+      status: descWords >= 15 && descWords <= 25 ? 'good' as const : 'recommended' as const,
+      message: descWords >= 15 && descWords <= 25 
+        ? `Meta description has optimal word count (${descWords} words).`
+        : `Meta description has ${descWords} words. Aim for 15-25 words for better engagement.`
+    });
+  }
+
+  // Heading hierarchy check
+  const totalHeadings = data.headings.h1 + data.headings.h2 + data.headings.h3;
+  checks.push({
+    category: 'Content Structure',
+    check: 'Heading Hierarchy',
+    status: totalHeadings >= 3 ? 'good' as const : 'recommended' as const,
+    message: totalHeadings >= 3 
+      ? `Good heading structure with ${totalHeadings} heading tags.`
+      : `Only ${totalHeadings} heading tags found. Add more headings for better content structure.`
+  });
+
+  // Image optimization checks
+  if (data.totalImages > 0) {
+    checks.push({
+      category: 'Performance',
+      check: 'Image Count',
+      status: data.totalImages <= 20 ? 'good' as const : 'recommended' as const,
+      message: data.totalImages <= 20 
+        ? `Reasonable number of images (${data.totalImages}).`
+        : `High number of images (${data.totalImages}). Consider optimizing for better performance.`
+    });
+  }
+
+  // Social media optimization
+  const twitterCardExists = data.twitterTags.card && data.twitterTags.card.length > 0;
+  checks.push({
+    category: 'Social Media',
+    check: 'Twitter Cards',
+    status: twitterCardExists ? 'good' as const : 'recommended' as const,
+    message: twitterCardExists 
+      ? 'Twitter Card meta tags are present.'
+      : 'Add Twitter Card meta tags for better social media sharing.'
+  });
+
+  // Mobile optimization checks
+  checks.push({
+    category: 'Mobile SEO',
+    check: 'Mobile Viewport',
+    status: 'recommended' as const,
+    message: 'Ensure your site is mobile-friendly and responsive.'
+  });
+
+  // Technical SEO checks
+  checks.push({
+    category: 'Technical SEO',
+    check: 'Page Speed',
+    status: 'recommended' as const,
+    message: 'Monitor Core Web Vitals and optimize for better page speed.'
+  });
+
+  checks.push({
+    category: 'Technical SEO',
+    check: 'URL Structure',
+    status: 'recommended' as const,
+    message: 'Ensure URLs are clean, descriptive, and SEO-friendly.'
+  });
+
+  checks.push({
+    category: 'Content Strategy',
+    check: 'Content Freshness',
+    status: 'recommended' as const,
+    message: 'Regularly update content to maintain relevance and rankings.'
+  });
+
+  checks.push({
+    category: 'Link Building',
+    check: 'Backlink Profile',
+    status: 'recommended' as const,
+    message: 'Build high-quality backlinks from relevant, authoritative websites.'
+  });
+
+  checks.push({
+    category: 'Analytics',
+    check: 'Tracking Setup',
+    status: 'recommended' as const,
+    message: 'Set up Google Analytics and Search Console for performance monitoring.'
+  });
+
   return checks;
 }
 
@@ -793,91 +897,177 @@ async function generateAIRecommendations(url: string, seoData: {
       ];
     }
 
-    // Generate specific recommendations based on actual audit findings
+    // Generate comprehensive recommendations based on actual audit findings
     const recommendations: string[] = [];
 
-    // Handle critical issues first
+    // Handle critical issues first (highest priority)
     criticalIssues.forEach(issue => {
       if (issue.check === 'H1 Tag') {
         if (seoData.headings?.h1 === 0) {
-          recommendations.push(`CRITICAL: Add exactly one H1 tag to your page - currently you have none. This is essential for SEO.`);
+          recommendations.push(`🚨 CRITICAL: Add exactly one H1 tag to your page - currently you have none. This is essential for SEO and helps search engines understand your main topic.`);
         } else if (seoData.headings && seoData.headings.h1 > 1) {
-          recommendations.push(`CRITICAL: You have ${seoData.headings.h1} H1 tags but should have exactly one. Remove ${seoData.headings.h1 - 1} H1 tags.`);
+          recommendations.push(`🚨 CRITICAL: You have ${seoData.headings.h1} H1 tags but should have exactly one. Remove ${seoData.headings.h1 - 1} H1 tags to avoid confusing search engines.`);
         }
       }
       
       if (issue.check === 'SEO Title Length' && seoData.title) {
         if (seoData.title.length === 0) {
-          recommendations.push(`CRITICAL: Add a title tag to your page - currently missing completely.`);
+          recommendations.push(`🚨 CRITICAL: Add a title tag to your page - currently missing completely. This is the most important on-page SEO element.`);
         } else if (seoData.title.length < 30) {
-          recommendations.push(`CRITICAL: Your title "${seoData.title}" is only ${seoData.title.length} characters. Expand it to 30-60 characters for better SEO.`);
+          recommendations.push(`🚨 CRITICAL: Your title "${seoData.title}" is only ${seoData.title.length} characters. Expand it to 30-60 characters for better SEO visibility.`);
         } else if (seoData.title.length > 60) {
-          recommendations.push(`CRITICAL: Your title is ${seoData.title.length} characters long. Shorten it to 30-60 characters to avoid truncation in search results.`);
+          recommendations.push(`🚨 CRITICAL: Your title is ${seoData.title.length} characters long. Shorten it to 30-60 characters to avoid truncation in search results.`);
         }
       }
 
       if (issue.check === 'Meta Description Length' && seoData.description !== undefined) {
         if (seoData.description.length === 0) {
-          recommendations.push(`CRITICAL: Add a meta description to your page - currently missing completely.`);
+          recommendations.push(`🚨 CRITICAL: Add a meta description to your page - currently missing completely. This affects click-through rates from search results.`);
         } else if (seoData.description.length < 120) {
-          recommendations.push(`CRITICAL: Your meta description is only ${seoData.description.length} characters. Expand it to 120-160 characters.`);
+          recommendations.push(`🚨 CRITICAL: Your meta description is only ${seoData.description.length} characters. Expand it to 120-160 characters to maximize search result visibility.`);
         } else if (seoData.description.length > 160) {
-          recommendations.push(`CRITICAL: Your meta description is ${seoData.description.length} characters long. Shorten it to 120-160 characters to avoid truncation.`);
+          recommendations.push(`🚨 CRITICAL: Your meta description is ${seoData.description.length} characters long. Shorten it to 120-160 characters to avoid truncation.`);
         }
       }
 
       if (issue.check === 'Image Alt Attributes' && seoData.imagesMissingAlt > 0) {
-        recommendations.push(`CRITICAL: Add alt text to ${seoData.imagesMissingAlt} images that are missing alt attributes.`);
+        recommendations.push(`🚨 CRITICAL: Add alt text to ${seoData.imagesMissingAlt} images that are missing alt attributes. This hurts accessibility and image SEO.`);
       }
 
       if (issue.check === 'HTTPS') {
-        recommendations.push(`CRITICAL: Switch your website from HTTP to HTTPS for security and SEO benefits.`);
+        recommendations.push(`🚨 CRITICAL: Switch your website from HTTP to HTTPS immediately. This is a major ranking factor and security requirement.`);
       }
 
       if (issue.check === 'Indexability') {
-        recommendations.push(`CRITICAL: Remove the noindex directive from your page so search engines can index it.`);
+        recommendations.push(`🚨 CRITICAL: Remove the noindex directive from your page so search engines can index it. Your page is currently hidden from search results.`);
+      }
+
+      if (issue.check === 'Duplicate Open Graph Tags') {
+        recommendations.push(`🚨 CRITICAL: Remove duplicate Open Graph tags to avoid social media sharing issues and confused search engines.`);
       }
     });
 
-    // Handle recommended improvements
+    // Handle recommended improvements (medium priority)
     recommendedIssues.forEach(issue => {
       if (issue.check === 'H2 Tags' && seoData.headings?.h2 === 0) {
-        recommendations.push(`Add H2 headings to structure your content better - currently you have none.`);
+        recommendations.push(`📝 Add H2 headings to structure your content better - currently you have none. This improves readability and SEO.`);
       }
 
       if (issue.check === 'Internal Links') {
-        recommendations.push(`Add more internal links to other pages on your site - currently you have very few.`);
+        recommendations.push(`🔗 Add more internal links to other pages on your site - currently you have very few. This helps with navigation and link equity distribution.`);
       }
 
       if (issue.check === 'Canonical Link') {
-        recommendations.push(`Add a canonical link tag to prevent duplicate content issues.`);
+        recommendations.push(`🔄 Add a canonical link tag to prevent duplicate content issues and consolidate page authority.`);
       }
 
       if (issue.check === 'Open Graph Tags') {
         const missing: string[] = [];
-        if (!seoData.ogTitle) missing.push('title');
-        if (!seoData.ogDescription) missing.push('description');
-        if (!seoData.ogImage) missing.push('image');
+        if (!seoData.ogTitle) missing.push('og:title');
+        if (!seoData.ogDescription) missing.push('og:description');
+        if (!seoData.ogImage) missing.push('og:image');
         if (missing.length > 0) {
-          recommendations.push(`Add missing Open Graph tags for social media: ${missing.join(', ')}.`);
+          recommendations.push(`📱 Add missing Open Graph tags for better social media sharing: ${missing.join(', ')}. This improves social media visibility.`);
         }
       }
 
       if (issue.check === 'Structured Data') {
-        recommendations.push(`Add Schema.org structured data to help search engines understand your content better.`);
+        recommendations.push(`📊 Add Schema.org structured data to help search engines understand your content better and enable rich snippets.`);
       }
 
       if (issue.check === 'XML Sitemap') {
-        recommendations.push(`Create and submit an XML sitemap to help search engines discover all your pages.`);
+        recommendations.push(`🗺️ Create and submit an XML sitemap to help search engines discover all your pages more efficiently.`);
       }
 
       if (issue.check === 'Robots.txt') {
-        recommendations.push(`Add a robots.txt file to guide search engine crawlers.`);
+        recommendations.push(`🤖 Add a robots.txt file to guide search engine crawlers and control which pages they can access.`);
+      }
+
+      if (issue.check === 'WWW Redirect') {
+        recommendations.push(`🌐 Set up proper WWW redirects to consolidate your domain authority and avoid duplicate content issues.`);
+      }
+
+      if (issue.check === 'Keywords in Title/Description') {
+        recommendations.push(`🎯 Include relevant keywords in your title and meta description to improve search relevance and rankings.`);
+      }
+
+      if (issue.check === 'JavaScript Minification') {
+        recommendations.push(`⚡ Minify your JavaScript files to improve page load speed and Core Web Vitals scores.`);
+      }
+
+      if (issue.check === 'CSS Minification') {
+        recommendations.push(`🎨 Minify your CSS files to reduce file sizes and improve loading performance.`);
+      }
+
+      if (issue.check === 'HTML Document Size') {
+        recommendations.push(`📄 Optimize your HTML document size - it's larger than average. Consider removing unnecessary code and optimizing content.`);
+      }
+
+      if (issue.check === 'HTTP Requests') {
+        recommendations.push(`🚀 Reduce the number of HTTP requests by combining files, using CSS sprites, or implementing lazy loading.`);
       }
     });
 
-    // Limit to top 5 most important recommendations
-    return recommendations.slice(0, 5);
+    // Add additional general SEO recommendations based on audit data
+    const additionalRecommendations: string[] = [];
+
+    // Heading structure recommendations
+    if (seoData.headings) {
+      if (seoData.headings.h3 === 0 && seoData.headings.h2 > 0) {
+        additionalRecommendations.push(`📋 Consider adding H3 subheadings under your H2s to create better content hierarchy and improve readability.`);
+      }
+      
+      if (seoData.headings.h1 + seoData.headings.h2 + seoData.headings.h3 < 3) {
+        additionalRecommendations.push(`📝 Add more heading tags (H1-H3) to better structure your content and improve SEO.`);
+      }
+    }
+
+    // Content and keyword recommendations
+    if (seoData.title && seoData.description) {
+      const titleWords = seoData.title.toLowerCase().split(' ').length;
+      const descWords = seoData.description.toLowerCase().split(' ').length;
+      
+      if (titleWords < 5) {
+        additionalRecommendations.push(`💭 Make your title more descriptive - it's currently only ${titleWords} words. Aim for 5-10 words for better SEO.`);
+      }
+      
+      if (descWords < 15) {
+        additionalRecommendations.push(`📝 Expand your meta description - it's only ${descWords} words. Aim for 20-25 words to better describe your content.`);
+      }
+    }
+
+    // Image optimization recommendations
+    if (seoData.totalImages > 10) {
+      additionalRecommendations.push(`🖼️ You have ${seoData.totalImages} images. Consider implementing lazy loading and image compression to improve page speed.`);
+    }
+
+    // Social media recommendations
+    if (!seoData.twitterCard) {
+      additionalRecommendations.push(`🐦 Add Twitter Card meta tags to improve how your content appears when shared on Twitter.`);
+    }
+
+    // Performance recommendations
+    if (seoData.estimatedRequests > 50) {
+      additionalRecommendations.push(`⚡ Your page makes ${seoData.estimatedRequests} requests. Consider reducing this number for better performance.`);
+    }
+
+    // Security and technical recommendations
+    additionalRecommendations.push(`🔒 Implement Content Security Policy (CSP) headers to enhance security and prevent XSS attacks.`);
+    additionalRecommendations.push(`📱 Ensure your website is mobile-friendly and passes Google's Mobile-Friendly Test.`);
+    additionalRecommendations.push(`🔍 Submit your website to Google Search Console and Bing Webmaster Tools for better indexing insights.`);
+    additionalRecommendations.push(`📈 Set up Google Analytics 4 to track user behavior and measure SEO performance.`);
+    additionalRecommendations.push(`🎯 Research and target long-tail keywords relevant to your content and industry.`);
+    additionalRecommendations.push(`📊 Create high-quality, original content that provides value to your target audience.`);
+    additionalRecommendations.push(`🔗 Build quality backlinks from reputable websites in your industry to improve domain authority.`);
+
+    // Combine all recommendations and prioritize them
+    const allRecommendations = [
+      ...recommendations, // Critical and recommended issues first
+      ...additionalRecommendations.slice(0, 8) // Add up to 8 additional recommendations
+    ];
+
+    // Return up to 15 recommendations instead of 5 for more comprehensive advice
+    return allRecommendations.slice(0, 15);
 
   } catch (error) {
     console.error('AI recommendations error:', error);
