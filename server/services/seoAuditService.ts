@@ -800,7 +800,7 @@ async function generateAIRecommendations(url: string, seoData: {
     `;
 
     const response = await axios.post('https://api.perplexity.ai/chat/completions', {
-      model: 'llama-3.1-sonar-small-128k-online',
+      model: 'sonar-pro',
       messages: [
         {
           role: 'user',
