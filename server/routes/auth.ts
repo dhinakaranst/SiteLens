@@ -2,6 +2,12 @@ import express from 'express';
 import { OAuth2Client, LoginTicket } from 'google-auth-library';
 import User from '../models/User.js';
 
+// Define User interface for type safety
+interface IUser {
+  _id: string;
+  googleId: string;
+  name: string;
+
 interface UserDocument extends mongoose.Document {
   _id: mongoose.Types.ObjectId;
   googleId: string;
@@ -10,6 +16,7 @@ interface UserDocument extends mongoose.Document {
   picture?: string;
   createdAt: Date;
 }
+
 
 import mongoose from 'mongoose';
 
@@ -59,6 +66,8 @@ router.post('/google', async (req, res) => {
 
     // Check if user already exists with timeout
     const userPromise = User.findOne({ googleId });
+    let user = await Promise.race([userPromise, timeoutPromise]) as IUser | null;
+
     let user = await Promise.race([userPromise, timeoutPromise]) as UserDocument | null;
     let user = await Promise.race([userPromise, timeoutPromise]) as unknown;
 
@@ -70,6 +79,8 @@ router.post('/google', async (req, res) => {
         email,
         picture
       });
+      user = await Promise.race([newUser.save(), timeoutPromise]) as IUser;
+
       user = await Promise.race([newUser.save(), timeoutPromise]) as UserDocument;
 
       user = await Promise.race([newUser.save(), timeoutPromise]) as unknown;
