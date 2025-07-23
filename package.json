@@ -12,6 +12,7 @@
     "build:server": "npm install && tsc --project tsconfig.server.json",
     "start": "node server-dist/server/index.js",
     "lint": "eslint .",
+    "test": "echo 'No tests specified' && exit 0",
     "preview": "vite preview",
     "dev:worker": "tsx server/queue/worker.ts"
   },
