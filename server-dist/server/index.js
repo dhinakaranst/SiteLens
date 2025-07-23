@@ -9,12 +9,12 @@ import { checkMeta } from './routes/meta-check.js';
 import { analyzeHeadings } from './routes/headings.js';
 import { checkSocialTags } from './routes/social-tags.js';
 dotenv.config();
-// Check if Gemini API key is available
-if (!process.env.GEMINI_API_KEY) {
-    console.warn('⚠️ GEMINI_API_KEY not found. AI recommendations will not work.');
+// Check if Perplexity API key is available
+if (!process.env.PERPLEXITY_API_KEY) {
+    console.warn('⚠️ PERPLEXITY_API_KEY not found. AI recommendations will not work.');
 }
 else {
-    console.log('✅ Gemini API key loaded successfully');
+    console.log('✅ Perplexity API key loaded successfully');
 }
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -116,7 +116,7 @@ const initializeWorker = async () => {
 app.use('/api/auth', authRoutes);
 app.use('/api', seoAuditRoutes);
 // Error handling middleware
-app.use((err, req, res, _next) => {
+app.use((err, req, res) => {
     console.error('Error:', err);
     res.status(500).json({
         success: false,
@@ -165,22 +165,6 @@ app.get('/api/audit/progress', (req, res) => {
         }
     });
 });
-// Helper function to broadcast progress to all clients
-const broadcastProgress = (url, progress) => {
-    const session = activeAnalyses.get(url);
-    if (session) {
-        session.progress = progress;
-        session.clients.forEach((client) => {
-            try {
-                client.write(`data: ${JSON.stringify(progress)}\n\n`);
-            }
-            catch {
-                // Client disconnected, remove from set
-                session.clients.delete(client);
-            }
-        });
-    }
-};
 // Additional SEO analysis routes
 app.post('/api/meta-check', async (req, res) => {
     try {
@@ -232,12 +216,16 @@ const startServer = async () => {
         // Ensure PORT is a number
         const port = typeof PORT === 'string' ? parseInt(PORT, 10) : PORT;
         // Start server with proper host binding for Render
-        app.listen(port, '0.0.0.0', () => {
+        const server = app.listen(port, '0.0.0.0', () => {
             console.log(`🚀 Server running on port ${port}`);
             console.log(`📍 Health check available at: http://localhost:${port}/healthz`);
             console.log(`📍 API available at: http://localhost:${port}/api/audit`);
             console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
         });
+        // Set server timeout to handle long-running requests (2 minutes)
+        server.timeout = 120000;
+        server.keepAliveTimeout = 120000;
+        server.headersTimeout = 120000;
     }
     catch (error) {
         console.error('❌ Failed to start server:', error);
