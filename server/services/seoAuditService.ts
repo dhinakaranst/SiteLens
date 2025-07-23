@@ -878,6 +878,7 @@ async function generateAIRecommendations(url: string, seoData: {
   twitterTitle: string;
   twitterDescription: string;
   twitterImage: string;
+  estimatedRequests?: number;
 }, auditChecks?: SEOCheck[], overallScore?: number) {
   try {
     if (!process.env.PERPLEXITY_API_KEY) {
@@ -1047,7 +1048,7 @@ async function generateAIRecommendations(url: string, seoData: {
     }
 
     // Performance recommendations
-    if (seoData.estimatedRequests > 50) {
+    if (seoData.estimatedRequests && seoData.estimatedRequests > 50) {
       additionalRecommendations.push(`⚡ Your page makes ${seoData.estimatedRequests} requests. Consider reducing this number for better performance.`);
     }
 

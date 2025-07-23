@@ -888,7 +888,7 @@ async function generateAIRecommendations(url, seoData, auditChecks, overallScore
             additionalRecommendations.push(`🐦 Add Twitter Card meta tags to improve how your content appears when shared on Twitter.`);
         }
         // Performance recommendations
-        if (seoData.estimatedRequests > 50) {
+        if (seoData.estimatedRequests && seoData.estimatedRequests > 50) {
             additionalRecommendations.push(`⚡ Your page makes ${seoData.estimatedRequests} requests. Consider reducing this number for better performance.`);
         }
         // Security and technical recommendations
