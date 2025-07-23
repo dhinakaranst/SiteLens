@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Hash, CheckCircle, AlertTriangle, XCircle, Loader, ChevronRight } from 'lucide-react';
+import { Hash, AlertTriangle, Loader, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 
 interface HeadingItem {
