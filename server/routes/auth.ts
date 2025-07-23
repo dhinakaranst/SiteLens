@@ -7,10 +7,18 @@ interface IUser {
   _id: string;
   googleId: string;
   name: string;
+
+interface UserDocument extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
+  googleId: string;
+  name?: string;
   email: string;
   picture?: string;
   createdAt: Date;
 }
+
+
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -45,6 +53,8 @@ router.post('/google', async (req, res) => {
     });
 
     const ticket = await Promise.race([verificationPromise, timeoutPromise]) as LoginTicket;
+    const ticket = await Promise.race([verificationPromise, timeoutPromise]) as unknown;
+
 
     const payload = ticket.getPayload();
     
@@ -58,6 +68,9 @@ router.post('/google', async (req, res) => {
     const userPromise = User.findOne({ googleId });
     let user = await Promise.race([userPromise, timeoutPromise]) as IUser | null;
 
+    let user = await Promise.race([userPromise, timeoutPromise]) as UserDocument | null;
+    let user = await Promise.race([userPromise, timeoutPromise]) as unknown;
+
     if (!user) {
       // Create new user with timeout
       const newUser = new User({
@@ -67,6 +80,10 @@ router.post('/google', async (req, res) => {
         picture
       });
       user = await Promise.race([newUser.save(), timeoutPromise]) as IUser;
+
+      user = await Promise.race([newUser.save(), timeoutPromise]) as UserDocument;
+
+      user = await Promise.race([newUser.save(), timeoutPromise]) as unknown;
     }
 
     // Return user data (without sensitive info)

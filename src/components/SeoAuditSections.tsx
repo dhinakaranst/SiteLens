@@ -7,6 +7,9 @@ interface SeoAuditSectionsProps {
   setShowLogin?: (show: boolean) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function SeoAuditSections({ user, setShowSEOAudit, ...props }: SeoAuditSectionsProps) {
+
 export default function SeoAuditSections({ user, setShowSEOAudit }: SeoAuditSectionsProps) {
   return (
     <>

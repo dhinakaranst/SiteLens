@@ -3,6 +3,20 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
+interface GoogleCredentialResponse {
+  credential: string;
+  clientId: string;
+}
+
+interface AuthResponse {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    picture: string;
+  };
+}
+
 const GoogleLoginComponent: React.FC = () => {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -20,12 +34,17 @@ const GoogleLoginComponent: React.FC = () => {
     });
   }
 
+  const handleSuccess = async (credentialResponse: GoogleCredentialResponse) => {
+
   const handleSuccess = async (credentialResponse: unknown) => {
     setIsLoading(true);
     console.log('🚀 Starting Google OAuth login...');
     console.log('📡 API URL:', `${API_BASE_URL}/api/auth/google`);
     
     try {
+      const response = await axios.post<AuthResponse>(`${API_BASE_URL}/api/auth/google`, {
+        credential: credentialResponse.credential
+
       const response = await axios.post(`${API_BASE_URL}/api/auth/google`, {
         credential: (credentialResponse as { credential: string }).credential
       }, {
@@ -77,6 +96,11 @@ const GoogleLoginComponent: React.FC = () => {
 
   const handleError = (error?: unknown) => {
     console.error('Google login failed:', error);
+    const errorMessage = error && typeof error === 'object' && 'message' in error 
+      ? (error as { message: string }).message 
+      : 'Google login failed. Please try again.';
+    alert(errorMessage);
+
     alert((error as Error)?.message || (error as { toString(): string })?.toString() || 'Google login failed. Please try again.');
   };
 
