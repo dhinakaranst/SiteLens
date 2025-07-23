@@ -3,6 +3,20 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
+interface GoogleCredentialResponse {
+  credential: string;
+  clientId: string;
+}
+
+interface AuthResponse {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    picture: string;
+  };
+}
+
 const GoogleLoginComponent: React.FC = () => {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -20,13 +34,13 @@ const GoogleLoginComponent: React.FC = () => {
     });
   }
 
-  const handleSuccess = async (credentialResponse: any) => {
+  const handleSuccess = async (credentialResponse: GoogleCredentialResponse) => {
     setIsLoading(true);
     console.log('🚀 Starting Google OAuth login...');
     console.log('📡 API URL:', `${API_BASE_URL}/api/auth/google`);
     
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/google`, {
+      const response = await axios.post<AuthResponse>(`${API_BASE_URL}/api/auth/google`, {
         credential: credentialResponse.credential
       }, {
         timeout: 15000 // 15 second timeout
@@ -36,7 +50,7 @@ const GoogleLoginComponent: React.FC = () => {
         login(response.data.user);
         console.log('✅ Login successful:', response.data.user.name);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Login failed:', error);
       console.error('🔍 Error details:', {
         message: error?.message,
@@ -75,9 +89,12 @@ const GoogleLoginComponent: React.FC = () => {
     }
   };
 
-  const handleError = (error?: any) => {
+  const handleError = (error?: unknown) => {
     console.error('Google login failed:', error);
-    alert(error?.message || error?.toString() || 'Google login failed. Please try again.');
+    const errorMessage = error && typeof error === 'object' && 'message' in error 
+      ? (error as { message: string }).message 
+      : 'Google login failed. Please try again.';
+    alert(errorMessage);
   };
 
   if (isLoading) {

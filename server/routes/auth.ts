@@ -1,6 +1,17 @@
 import express from 'express';
-import { OAuth2Client } from 'google-auth-library';
+import { OAuth2Client, LoginTicket } from 'google-auth-library';
 import User from '../models/User.js';
+
+interface UserDocument extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
+  googleId: string;
+  name?: string;
+  email: string;
+  picture?: string;
+  createdAt: Date;
+}
+
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -34,7 +45,7 @@ router.post('/google', async (req, res) => {
       audience: process.env.VITE_GOOGLE_CLIENT_ID
     });
 
-    const ticket = await Promise.race([verificationPromise, timeoutPromise]) as any;
+    const ticket = await Promise.race([verificationPromise, timeoutPromise]) as LoginTicket;
 
     const payload = ticket.getPayload();
     
@@ -46,7 +57,7 @@ router.post('/google', async (req, res) => {
 
     // Check if user already exists with timeout
     const userPromise = User.findOne({ googleId });
-    let user = await Promise.race([userPromise, timeoutPromise]) as any;
+    let user = await Promise.race([userPromise, timeoutPromise]) as UserDocument | null;
 
     if (!user) {
       // Create new user with timeout
@@ -56,7 +67,7 @@ router.post('/google', async (req, res) => {
         email,
         picture
       });
-      user = await Promise.race([newUser.save(), timeoutPromise]) as any;
+      user = await Promise.race([newUser.save(), timeoutPromise]) as UserDocument;
     }
 
     // Return user data (without sensitive info)

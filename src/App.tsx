@@ -1,19 +1,13 @@
-import React, { useState, useRef, useCallback, useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, NavLink, useLocation } from 'react-router-dom';
-import { UrlInput } from './components/UrlInput';
+import React, { useState, useCallback, useEffect, Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import { SEOReport } from './components/SEOReport';
-import { MetaChecker } from './components/MetaChecker';
-import { HeadingsAnalyzer } from './components/HeadingsAnalyzer';
-import { SocialTagsChecker } from './components/SocialTagsChecker';
 import { useSEOAnalysis } from './hooks/useSEOAnalysis';
 import { useAuth } from './contexts/AuthContext';
 import GoogleLoginComponent from './components/GoogleLogin';
 import UserProfile from './components/UserProfile';
 import SeoAuditSections from './components/SeoAuditSections';
-import { AlertCircle, Search, Hash, FileText, Share2, Rocket, Brain, CheckCircle, Zap, Shield, Download, User, Clock, Menu, X, ChevronDown, Globe } from 'lucide-react';
+import { AlertCircle, Search, Hash, FileText, Share2, Rocket, Brain, CheckCircle, Menu, X, ChevronDown, Globe } from 'lucide-react';
 import sitelensLogo from './assets/sitelens_logo.webp';
-
-type ActiveTool = 'full-audit' | 'meta-checker' | 'headings-analyzer' | 'social-tags';
 
 const PDFPremiumModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   if (!open) return null;
@@ -51,7 +45,17 @@ const ComingSoonModal = ({ open, onClose }: { open: boolean; onClose: () => void
   );
 };
 
-const SEOAuditModal = ({ open, onClose, isLoading, checksLeft, handleToolAction, showPDFModal, setShowPDFModal }: any) => {
+interface SEOAuditModalProps {
+  open: boolean;
+  onClose: () => void;
+  isLoading: boolean;
+  checksLeft: number;
+  handleToolAction: (tool: string) => void;
+  showPDFModal: boolean;
+  setShowPDFModal: (value: boolean) => void;
+}
+
+const SEOAuditModal = ({ open, onClose, handleToolAction }: SEOAuditModalProps) => {
   const [inputs, setInputs] = useState({ url: '' });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -317,15 +321,6 @@ const ResourcesPage = () => (
 
 const NotFound = lazy(() => import('./components/NotFound'));
 
-// ProtectedRoute wrapper
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
-  const location = useLocation();
-  if (isLoading) return null;
-  if (!user) return <Navigate to="/" state={{ from: location }} replace />;
-  return <>{children}</>;
-}
-
 const HomePage = ({ 
   analyzeWebsite, 
   isLoading 
@@ -445,20 +440,15 @@ const HomePage = ({
 function App() {
   const { isLoading, progress, report, error, analyzeWebsite: originalAnalyzeWebsite, resetReport } = useSEOAnalysis();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('seo');
-  const [showToast, setShowToast] = useState(false);
+  const [activeTab] = useState('seo');
   const [showPDFModal, setShowPDFModal] = useState(false);
   const [checksLeft, setChecksLeft] = useState(3);
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [showSEOAudit, setShowSEOAudit] = useState(false);
-  const featuresRef = useRef<HTMLDivElement>(null);
-  const pricingRef = useRef<HTMLDivElement>(null);
-  const [showResources, setShowResources] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [lang, setLang] = useState('EN');
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -476,95 +466,24 @@ function App() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      if (hoverTimeout) {
-        clearTimeout(hoverTimeout);
-      }
     };
-  }, [hoverTimeout]);
-
-  // Handle hover with delay
-  const handleMouseEnter = (menuType: string) => {
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-      setHoverTimeout(null);
-    }
-    setHoveredMenu(menuType);
-  };
-
-  const handleMouseLeave = () => {
-    const timeout = setTimeout(() => {
-      setHoveredMenu(null);
-    }, 300); // 300ms delay before closing
-    setHoverTimeout(timeout);
-  };
+  }, []);
 
   // Memoize the analyzeWebsite function to prevent unnecessary re-renders
   const analyzeWebsite = useCallback((url: string) => {
     originalAnalyzeWebsite(url);
   }, [originalAnalyzeWebsite]);
 
-  const tools = [
-    {
-      id: 'full-audit' as ActiveTool,
-      name: 'Full SEO Audit',
-      description: 'Complete website analysis',
-      icon: Search,
-      color: 'blue'
-    },
-    {
-      id: 'meta-checker' as ActiveTool,
-      name: 'Meta Tags Checker',
-      description: 'Title & description length',
-      icon: FileText,
-      color: 'green'
-    },
-    {
-      id: 'headings-analyzer' as ActiveTool,
-      name: 'Headings Analyzer',
-      description: 'H1-H6 structure analysis',
-      icon: Hash,
-      color: 'purple'
-    },
-    {
-      id: 'social-tags' as ActiveTool,
-      name: 'Social Tags Checker',
-      description: 'OpenGraph & Twitter cards',
-      icon: Share2,
-      color: 'pink'
-    }
-  ];
-
-  const getColorClasses = (color: string, isActive: boolean) => {
-    const colors = {
-      blue: isActive ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100',
-      green: isActive ? 'bg-green-600 text-white' : 'bg-green-50 text-green-700 hover:bg-green-100',
-      purple: isActive ? 'bg-purple-600 text-white' : 'bg-purple-50 text-purple-700 hover:bg-purple-100',
-      pink: isActive ? 'bg-pink-600 text-white' : 'bg-pink-50 text-pink-700 hover:bg-pink-100'
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
-
   // Simulate tool action (replace with real logic)
   const handleToolAction = (tabId: string) => {
     if (checksLeft <= 0) {
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
       return;
     }
     if (tabId === 'seo') {
       // This will be handled by the HomePage component now
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
     } else {
       // Simulate check for other tools
       setChecksLeft(c => c - 1);
-    }
-  };
-
-  // Helper for smooth scroll
-  const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
-    if (user) {
-      ref.current?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -683,11 +602,34 @@ function App() {
 }
 
 // Layout wrapper to handle conditional rendering based on route
+interface LayoutWrapperProps {
+  analyzeWebsite: (url: string) => void;
+  isLoading: boolean;
+  showToast: boolean;
+  setShowToast: (value: boolean) => void;
+  showPDFModal: boolean;
+  setShowPDFModal: (value: boolean) => void;
+  showComingSoon: boolean;
+  setShowComingSoon: (value: boolean) => void;
+  showSEOAudit: boolean;
+  setShowSEOAudit: (value: boolean) => void;
+  checksLeft: number;
+  handleToolAction: (tool: string) => void;
+  hoveredMenu: string | null;
+  setHoveredMenu: (menu: string | null) => void;
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
+  showLangDropdown: boolean;
+  setShowLangDropdown: (show: boolean) => void;
+  lang: string;
+  setLang: (lang: string) => void;
+  user: unknown; // Keep as unknown for now since auth context might define this
+}
+
 function LayoutWrapper({
   analyzeWebsite,
   isLoading,
   showToast,
-  setShowToast,
   showPDFModal,
   setShowPDFModal,
   showComingSoon,
@@ -704,11 +646,12 @@ function LayoutWrapper({
   setShowLangDropdown,
   lang,
   setLang,
-  user
-}: any) {
+  user,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ...props // This will capture setShowToast without explicitly naming it
+}: LayoutWrapperProps) {
   const location = useLocation();
   const isHome = location.pathname === "/";
-  const isPricing = location.pathname === "/pricing";
 
   // Handle hover with delay
   const handleMouseEnter = (menuType: string) => {

@@ -129,7 +129,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api', seoAuditRoutes);
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response) => {
   console.error('Error:', err);
   res.status(500).json({ 
     success: false, 
@@ -186,22 +186,6 @@ app.get('/api/audit/progress', (req, res) => {
     }
   });
 });
-
-// Helper function to broadcast progress to all clients
-const broadcastProgress = (url: string, progress: { stage: string; message: string }) => {
-  const session = activeAnalyses.get(url);
-  if (session) {
-    session.progress = progress;
-    session.clients.forEach((client: NodeJS.WritableStream) => {
-      try {
-        client.write(`data: ${JSON.stringify(progress)}\n\n`);
-      } catch {
-        // Client disconnected, remove from set
-        session.clients.delete(client);
-      }
-    });
-  }
-};
 
 // Additional SEO analysis routes
 app.post('/api/meta-check', async (req, res) => {
