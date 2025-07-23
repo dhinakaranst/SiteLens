@@ -187,6 +187,7 @@ app.get('/api/audit/progress', (req, res) => {
   });
 });
 
+
 // Additional SEO analysis routes
 app.post('/api/meta-check', async (req, res) => {
   try {

@@ -9,6 +9,8 @@ interface SeoAuditSectionsProps {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function SeoAuditSections({ user, setShowSEOAudit, ...props }: SeoAuditSectionsProps) {
+
+export default function SeoAuditSections({ user, setShowSEOAudit }: SeoAuditSectionsProps) {
   return (
     <>
       {/* Feature Deep-Dive Sections */}

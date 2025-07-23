@@ -56,6 +56,11 @@ interface SEOAuditModalProps {
 }
 
 const SEOAuditModal = ({ open, onClose, handleToolAction }: SEOAuditModalProps) => {
+
+  handleToolAction: (action: string) => void;
+}
+
+const SEOAuditModal = ({ open, onClose, isLoading, checksLeft, handleToolAction }: SEOAuditModalProps) => {
   const [inputs, setInputs] = useState({ url: '' });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -441,6 +446,8 @@ function App() {
   const { isLoading, progress, report, error, analyzeWebsite: originalAnalyzeWebsite, resetReport } = useSEOAnalysis();
   const { user } = useAuth();
   const [activeTab] = useState('seo');
+
+  const [showToast, setShowToast] = useState(false);
   const [showPDFModal, setShowPDFModal] = useState(false);
   const [checksLeft, setChecksLeft] = useState(3);
   const [showComingSoon, setShowComingSoon] = useState(false);
@@ -576,7 +583,6 @@ function App() {
             analyzeWebsite={analyzeWebsite}
             isLoading={isLoading}
             showToast={showToast}
-            setShowToast={setShowToast}
             showPDFModal={showPDFModal}
             setShowPDFModal={setShowPDFModal}
             showComingSoon={showComingSoon}
@@ -615,6 +621,16 @@ interface LayoutWrapperProps {
   setShowSEOAudit: (value: boolean) => void;
   checksLeft: number;
   handleToolAction: (tool: string) => void;
+
+  showPDFModal: boolean;
+  setShowPDFModal: (show: boolean) => void;
+  showComingSoon: boolean;
+  setShowComingSoon: (show: boolean) => void;
+  showSEOAudit: boolean;
+  setShowSEOAudit: (show: boolean) => void;
+  checksLeft: number;
+  handleToolAction: (action: string) => void;
+
   hoveredMenu: string | null;
   setHoveredMenu: (menu: string | null) => void;
   mobileMenuOpen: boolean;
@@ -624,6 +640,9 @@ interface LayoutWrapperProps {
   lang: string;
   setLang: (lang: string) => void;
   user: unknown; // Keep as unknown for now since auth context might define this
+
+  user: unknown;
+
 }
 
 function LayoutWrapper({
@@ -646,9 +665,11 @@ function LayoutWrapper({
   setShowLangDropdown,
   lang,
   setLang,
+
   user,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ...props // This will capture setShowToast without explicitly naming it
+  user
 }: LayoutWrapperProps) {
   const location = useLocation();
   const isHome = location.pathname === "/";

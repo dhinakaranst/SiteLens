@@ -35,6 +35,8 @@ const GoogleLoginComponent: React.FC = () => {
   }
 
   const handleSuccess = async (credentialResponse: GoogleCredentialResponse) => {
+
+  const handleSuccess = async (credentialResponse: unknown) => {
     setIsLoading(true);
     console.log('🚀 Starting Google OAuth login...');
     console.log('📡 API URL:', `${API_BASE_URL}/api/auth/google`);
@@ -42,6 +44,9 @@ const GoogleLoginComponent: React.FC = () => {
     try {
       const response = await axios.post<AuthResponse>(`${API_BASE_URL}/api/auth/google`, {
         credential: credentialResponse.credential
+
+      const response = await axios.post(`${API_BASE_URL}/api/auth/google`, {
+        credential: (credentialResponse as { credential: string }).credential
       }, {
         timeout: 15000 // 15 second timeout
       });
@@ -53,31 +58,31 @@ const GoogleLoginComponent: React.FC = () => {
     } catch (error: unknown) {
       console.error('❌ Login failed:', error);
       console.error('🔍 Error details:', {
-        message: error?.message,
-        code: error?.code,
-        status: error?.response?.status,
-        statusText: error?.response?.statusText,
-        data: error?.response?.data
+        message: (error as Error)?.message,
+        code: (error as { code?: string })?.code,
+        status: (error as { response?: { status?: number } })?.response?.status,
+        statusText: (error as { response?: { statusText?: string } })?.response?.statusText,
+        data: (error as { response?: { data?: unknown } })?.response?.data
       });
       
       let errorMessage = 'Login failed. Please try again.';
       
-      if (error.code === 'ERR_NETWORK') {
+      if ((error as { code?: string })?.code === 'ERR_NETWORK') {
         errorMessage = 'Network error. Please check if the server is running and try again.';
-      } else if (error.code === 'ECONNABORTED') {
+      } else if ((error as { code?: string })?.code === 'ECONNABORTED') {
         errorMessage = 'Login timeout. Please check your connection and try again.';
-      } else if (error.response?.status === 408) {
+      } else if ((error as { response?: { status?: number } })?.response?.status === 408) {
         errorMessage = 'Authentication timeout. Please try again.';
-      } else if (error.response?.status === 401) {
+      } else if ((error as { response?: { status?: number } })?.response?.status === 401) {
         errorMessage = 'Invalid authentication. Please try again.';
-      } else if (error.response?.status === 403) {
+      } else if ((error as { response?: { status?: number } })?.response?.status === 403) {
         errorMessage = 'Access denied. Please check your Google OAuth configuration.';
-      } else if (error.response?.status === 404) {
+      } else if ((error as { response?: { status?: number } })?.response?.status === 404) {
         errorMessage = 'API endpoint not found. Please check server configuration.';
-      } else if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error?.message) {
-        errorMessage = error.message;
+      } else if ((error as { response?: { data?: { error?: string } } })?.response?.data?.error) {
+        errorMessage = (error as { response: { data: { error: string } } }).response.data.error;
+      } else if ((error as Error)?.message) {
+        errorMessage = (error as Error).message;
       }
       
       // Use a more user-friendly notification instead of alert
@@ -95,6 +100,8 @@ const GoogleLoginComponent: React.FC = () => {
       ? (error as { message: string }).message 
       : 'Google login failed. Please try again.';
     alert(errorMessage);
+
+    alert((error as Error)?.message || (error as { toString(): string })?.toString() || 'Google login failed. Please try again.');
   };
 
   if (isLoading) {
