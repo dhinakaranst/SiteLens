@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { SEOReport } from '../types/seo';
+import { useAuth } from '../contexts/AuthContext';
 
 export type AnalysisProgress = {
-  stage: 'initial' | 'fetching' | 'analyzing' | 'pagespeed' | 'ai' | 'complete' | 'error';
+  stage: 'initial' | 'fetching' | 'analyzing' | 'pagespeed' | 'ai' | 'complete' | 'error' | 'auth-required';
   message: string;
 };
 
 export const useSEOAnalysis = () => {
+  const { canPerformCheck, incrementUsage, getRemainingChecks } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState<AnalysisProgress>({ stage: 'initial', message: '' });
   const [report, setReport] = useState<SEOReport | null>(null);
@@ -15,7 +17,18 @@ export const useSEOAnalysis = () => {
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
-  const analyzeWebsite = async (url: string) => {
+  const analyzeWebsite = async (url: string): Promise<{ success: boolean; requiresAuth: boolean }> => {
+    // Check if user can perform analysis
+    if (!canPerformCheck()) {
+      const remaining = getRemainingChecks();
+      setError(`You've reached your free check limit (${remaining} remaining). Please sign in with Google to continue analyzing websites.`);
+      setProgress({ 
+        stage: 'auth-required', 
+        message: 'Authentication required for more checks' 
+      });
+      return { success: false, requiresAuth: true };
+    }
+
     setIsLoading(true);
     setError(null);
     setReport(null);
@@ -54,6 +67,11 @@ export const useSEOAnalysis = () => {
 
       setProgress({ stage: 'complete', message: 'Analysis complete!' });
       setReport(response.data);
+      
+      // Increment usage count after successful analysis
+      incrementUsage();
+      
+      return { success: true, requiresAuth: false };
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
@@ -68,6 +86,7 @@ export const useSEOAnalysis = () => {
       } else {
         setError('An unexpected error occurred');
       }
+      return { success: false, requiresAuth: false };
     } finally {
       setIsLoading(false);
       eventSource.close();
@@ -80,6 +99,8 @@ export const useSEOAnalysis = () => {
     report,
     error,
     analyzeWebsite,
+    canPerformCheck,
+    getRemainingChecks,
     resetReport: () => {
       setReport(null);
       setError(null);

@@ -6,6 +6,7 @@ import { useAuth } from './contexts/AuthContext';
 import GoogleLoginComponent from './components/GoogleLogin';
 import UserProfile from './components/UserProfile';
 import SeoAuditSections from './components/SeoAuditSections';
+import AdSenseLoader from './components/AdSenseLoader';
 import { AlertCircle, Search, Hash, FileText, Share2, Rocket, Brain, CheckCircle, Menu, X, ChevronDown, Globe } from 'lucide-react';
 import sitelensLogo from './assets/sitelens_logo.webp';
 
@@ -30,6 +31,29 @@ const Toast = ({ message, show }: { message: string; show: boolean }) => (
   </div>
 );
 
+const AuthModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl p-8 max-w-md mx-4">
+        <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
+        <p className="text-gray-600 mb-6">
+          You've used your free check. Sign in with Google to continue analyzing websites.
+        </p>
+        <div className="space-y-4">
+          <GoogleLoginComponent />
+          <button 
+            onClick={onClose} 
+            className="w-full bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ComingSoonModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   if (!open) return null;
   return (
@@ -49,18 +73,13 @@ interface SEOAuditModalProps {
   open: boolean;
   onClose: () => void;
   isLoading: boolean;
-  checksLeft: number;
+  remainingChecks: number;
   handleToolAction: (tool: string) => void;
   showPDFModal: boolean;
   setShowPDFModal: (value: boolean) => void;
 }
 
-const SEOAuditModal = ({ open, onClose, handleToolAction }: SEOAuditModalProps) => {
-
-  handleToolAction: (action: string) => void;
-}
-
-const SEOAuditModal = ({ open, onClose, isLoading, checksLeft, handleToolAction }: SEOAuditModalProps) => {
+const SEOAuditModal = ({ open, onClose, isLoading, remainingChecks, handleToolAction }: SEOAuditModalProps) => {
   const [inputs, setInputs] = useState({ url: '' });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -105,25 +124,208 @@ const SEOAuditModal = ({ open, onClose, isLoading, checksLeft, handleToolAction 
             </button>
           </div>
         </form>
-        <p className="text-sm text-gray-500 mt-4">Checks remaining: {checksLeft}</p>
+        <p className="text-sm text-gray-500 mt-4">
+          {remainingChecks === -1 
+            ? 'Unlimited checks (signed in)' 
+            : `Checks remaining: ${remainingChecks}`
+          }
+        </p>
       </div>
     </div>
   );
 };
 
 const FeaturesPage = () => (
-  <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-8">
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Features & Use Cases</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-2xl font-bold mb-4">SEO Audit</h2>
-          <p className="text-gray-600">Complete website analysis with detailed recommendations.</p>
+  <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="max-w-6xl mx-auto px-4 py-16">
+      <div className="text-center mb-16">
+        <h1 className="text-5xl font-bold text-gray-900 mb-6">Comprehensive SEO Tools & Features</h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          Discover how SiteLens helps businesses improve their search engine rankings with our comprehensive suite of SEO analysis tools. From technical audits to content optimization, we provide everything you need to succeed online.
+        </p>
+      </div>
+
+      {/* Main Features Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+            <Search className="w-8 h-8 text-blue-600" />
+          </div>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">Complete SEO Audit</h2>
+          <p className="text-gray-600 mb-4">
+            Our comprehensive SEO audit analyzes over 100+ ranking factors including technical SEO, on-page optimization, meta tags, headings structure, and mobile responsiveness. Get detailed insights into what's holding your website back from ranking higher.
+          </p>
+          <ul className="text-sm text-gray-600 space-y-2">
+            <li>• Technical SEO analysis</li>
+            <li>• On-page optimization review</li>
+            <li>• Mobile responsiveness check</li>
+            <li>• Page speed performance</li>
+            <li>• HTML validation</li>
+          </ul>
         </div>
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-2xl font-bold mb-4">Meta Tags Checker</h2>
-          <p className="text-gray-600">Analyze title and description optimization.</p>
+
+        <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+            <FileText className="w-8 h-8 text-green-600" />
+          </div>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">Meta Tags Optimization</h2>
+          <p className="text-gray-600 mb-4">
+            Analyze and optimize your website's meta tags including title tags, meta descriptions, Open Graph tags, and Twitter Cards. Ensure your content appears perfectly when shared on social media platforms and search results.
+          </p>
+          <ul className="text-sm text-gray-600 space-y-2">
+            <li>• Title tag length and optimization</li>
+            <li>• Meta description analysis</li>
+            <li>• Open Graph tags validation</li>
+            <li>• Twitter Card implementation</li>
+            <li>• Schema markup detection</li>
+          </ul>
         </div>
+
+        <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+            <Hash className="w-8 h-8 text-purple-600" />
+          </div>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">Headings Structure</h2>
+          <p className="text-gray-600 mb-4">
+            Analyze your website's heading hierarchy (H1-H6 tags) to ensure proper content structure. Our tool identifies missing headings, improper nesting, and provides recommendations for better content organization.
+          </p>
+          <ul className="text-sm text-gray-600 space-y-2">
+            <li>• H1-H6 hierarchy analysis</li>
+            <li>• Missing headings detection</li>
+            <li>• Content structure optimization</li>
+            <li>• Accessibility improvements</li>
+            <li>• SEO-friendly formatting</li>
+          </ul>
+        </div>
+
+        <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="w-16 h-16 bg-orange-100 rounded-lg flex items-center justify-center mb-6">
+            <Share2 className="w-8 h-8 text-orange-600" />
+          </div>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">Social Media Tags</h2>
+          <p className="text-gray-600 mb-4">
+            Ensure your website looks great when shared on social media platforms. We check Open Graph tags, Twitter Cards, and other social media meta tags to maximize your content's social media presence.
+          </p>
+          <ul className="text-sm text-gray-600 space-y-2">
+            <li>• Facebook Open Graph optimization</li>
+            <li>• Twitter Cards validation</li>
+            <li>• LinkedIn sharing optimization</li>
+            <li>• Pinterest rich pins setup</li>
+            <li>• Social media preview testing</li>
+          </ul>
+        </div>
+
+        <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center mb-6">
+            <Rocket className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">Page Speed Analysis</h2>
+          <p className="text-gray-600 mb-4">
+            Page speed is a critical ranking factor. Our tool analyzes your website's loading performance, identifies bottlenecks, and provides specific recommendations to improve your Core Web Vitals scores.
+          </p>
+          <ul className="text-sm text-gray-600 space-y-2">
+            <li>• Core Web Vitals measurement</li>
+            <li>• Loading speed analysis</li>
+            <li>• Image optimization suggestions</li>
+            <li>• CSS/JS minification tips</li>
+            <li>• Caching recommendations</li>
+          </ul>
+        </div>
+
+        <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+            <Brain className="w-8 h-8 text-indigo-600" />
+          </div>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">AI-Powered Recommendations</h2>
+          <p className="text-gray-600 mb-4">
+            Get intelligent, actionable recommendations powered by advanced AI. Our system understands your website's context and provides personalized suggestions to improve your search engine rankings.
+          </p>
+          <ul className="text-sm text-gray-600 space-y-2">
+            <li>• Personalized optimization tips</li>
+            <li>• Priority-based action items</li>
+            <li>• Industry-specific advice</li>
+            <li>• Competitor analysis insights</li>
+            <li>• Content improvement suggestions</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Use Cases Section */}
+      <div className="bg-white rounded-2xl p-12 shadow-lg mb-16">
+        <h2 className="text-4xl font-bold text-gray-900 mb-8 text-center">Perfect for Every Business</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="text-center">
+            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Globe className="w-10 h-10 text-blue-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-4">Small Businesses</h3>
+            <p className="text-gray-600">
+              Improve your local SEO, attract more customers, and compete with larger businesses online. Our tools are designed for businesses without dedicated SEO teams.
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-green-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-4">Digital Agencies</h3>
+            <p className="text-gray-600">
+              Provide comprehensive SEO audits to your clients, identify optimization opportunities, and demonstrate the value of your services with detailed reports.
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <FileText className="w-10 h-10 text-purple-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-4">Content Creators</h3>
+            <p className="text-gray-600">
+              Optimize your blog posts, articles, and web content for better search engine visibility. Increase organic traffic and grow your audience.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* How It Works Section */}
+      <div className="mb-16">
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">How SiteLens Works</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">1</div>
+            <h3 className="text-lg font-semibold mb-2">Enter Your URL</h3>
+            <p className="text-gray-600 text-sm">Simply paste your website URL into our analyzer tool</p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">2</div>
+            <h3 className="text-lg font-semibold mb-2">AI Analysis</h3>
+            <p className="text-gray-600 text-sm">Our AI scans your website for 100+ SEO factors</p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">3</div>
+            <h3 className="text-lg font-semibold mb-2">Get Results</h3>
+            <p className="text-gray-600 text-sm">Receive detailed insights and recommendations</p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">4</div>
+            <h3 className="text-lg font-semibold mb-2">Optimize</h3>
+            <p className="text-gray-600 text-sm">Implement our suggestions to improve your rankings</p>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="text-center bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-12 text-white">
+        <h2 className="text-3xl font-bold mb-4">Ready to Improve Your SEO?</h2>
+        <p className="text-xl mb-8 opacity-90">
+          Get instant insights into your website's SEO performance with our free AI-powered audit tool.
+        </p>
+        <NavLink 
+          to="/" 
+          className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-bold text-lg rounded-xl hover:bg-gray-100 transition-colors"
+        >
+          Start Free SEO Audit
+          <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l7-7m0 0l-7-7m7 7H3" />
+          </svg>
+        </NavLink>
       </div>
     </div>
   </div>
@@ -307,18 +509,278 @@ const PricingPage = () => (
 );
 
 const ResourcesPage = () => (
-  <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-8">
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Resources</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-2xl font-bold mb-4">Documentation</h2>
-          <p className="text-gray-600">Learn how to use our SEO tools effectively.</p>
+  <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="max-w-6xl mx-auto px-4 py-16">
+      <div className="text-center mb-16">
+        <h1 className="text-5xl font-bold text-gray-900 mb-6">SEO Resources & Learning Center</h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          Master SEO with our comprehensive collection of guides, tutorials, and industry insights. From beginner basics to advanced strategies, we provide everything you need to improve your website's search engine performance.
+        </p>
+      </div>
+
+      {/* Main Resources Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        {/* Documentation Section */}
+        <div className="bg-white rounded-2xl p-8 shadow-lg">
+          <div className="flex items-center mb-6">
+            <div className="w-16 h-16 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+              <FileText className="w-8 h-8 text-orange-600" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">Documentation</h2>
+              <p className="text-gray-600">Complete guides to using our SEO tools effectively</p>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="border-l-4 border-orange-500 pl-6">
+              <h3 className="text-xl font-semibold mb-2">Getting Started Guide</h3>
+              <p className="text-gray-600 mb-3">
+                Learn how to perform your first SEO audit, interpret results, and implement recommendations. Perfect for beginners who want to understand the basics of website optimization.
+              </p>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Setting up your first audit</li>
+                <li>• Understanding SEO scores</li>
+                <li>• Priority-based optimization</li>
+                <li>• Tracking improvements</li>
+              </ul>
+            </div>
+
+            <div className="border-l-4 border-orange-500 pl-6">
+              <h3 className="text-xl font-semibold mb-2">Advanced SEO Techniques</h3>
+              <p className="text-gray-600 mb-3">
+                Deep dive into technical SEO, schema markup, Core Web Vitals optimization, and advanced on-page strategies that can significantly boost your search rankings.
+              </p>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Technical SEO optimization</li>
+                <li>• Schema markup implementation</li>
+                <li>• Core Web Vitals improvement</li>
+                <li>• International SEO strategies</li>
+              </ul>
+            </div>
+
+            <div className="border-l-4 border-orange-500 pl-6">
+              <h3 className="text-xl font-semibold mb-2">Tool Documentation</h3>
+              <p className="text-gray-600 mb-3">
+                Comprehensive documentation for all SiteLens features including API access, bulk analysis, reporting tools, and integration options for agencies and developers.
+              </p>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• API documentation</li>
+                <li>• Bulk analysis features</li>
+                <li>• Report customization</li>
+                <li>• Integration guides</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-2xl font-bold mb-4">Blog</h2>
-          <p className="text-gray-600">Latest SEO tips and industry insights.</p>
+
+        {/* Blog Section */}
+        <div className="bg-white rounded-2xl p-8 shadow-lg">
+          <div className="flex items-center mb-6">
+            <div className="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
+              <Brain className="w-8 h-8 text-indigo-600" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">SEO Blog</h2>
+              <p className="text-gray-600">Latest insights, tips, and industry updates</p>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <article className="border-l-4 border-indigo-500 pl-6">
+              <h3 className="text-xl font-semibold mb-2">Google's Latest Algorithm Updates</h3>
+              <p className="text-gray-600 mb-3">
+                Stay up-to-date with the latest Google algorithm changes and how they affect your website's ranking. Learn how to adapt your SEO strategy to maintain and improve your search visibility.
+              </p>
+              <div className="flex items-center text-sm text-gray-500">
+                <span>Published: August 2024</span>
+                <span className="mx-2">•</span>
+                <span>5 min read</span>
+              </div>
+            </article>
+
+            <article className="border-l-4 border-indigo-500 pl-6">
+              <h3 className="text-xl font-semibold mb-2">Core Web Vitals: Complete Optimization Guide</h3>
+              <p className="text-gray-600 mb-3">
+                Master Google's Core Web Vitals with our comprehensive guide. Learn how to improve Largest Contentful Paint (LCP), First Input Delay (FID), and Cumulative Layout Shift (CLS) scores.
+              </p>
+              <div className="flex items-center text-sm text-gray-500">
+                <span>Published: July 2024</span>
+                <span className="mx-2">•</span>
+                <span>8 min read</span>
+              </div>
+            </article>
+
+            <article className="border-l-4 border-indigo-500 pl-6">
+              <h3 className="text-xl font-semibold mb-2">Local SEO Best Practices for Small Businesses</h3>
+              <p className="text-gray-600 mb-3">
+                Dominate local search results with proven strategies for small businesses. From Google My Business optimization to local keyword targeting, learn how to attract nearby customers.
+              </p>
+              <div className="flex items-center text-sm text-gray-500">
+                <span>Published: June 2024</span>
+                <span className="mx-2">•</span>
+                <span>6 min read</span>
+              </div>
+            </article>
+          </div>
         </div>
+      </div>
+
+      {/* SEO Learning Path */}
+      <div className="bg-white rounded-2xl p-12 shadow-lg mb-16">
+        <h2 className="text-4xl font-bold text-gray-900 mb-8 text-center">SEO Learning Path</h2>
+        <p className="text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto">
+          Follow our structured learning path to master SEO from beginner to advanced levels. Each module builds upon the previous one to ensure comprehensive understanding.
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="text-center relative">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10">
+              <span className="text-2xl font-bold text-green-600">1</span>
+            </div>
+            <h3 className="text-xl font-bold mb-4">Beginner Level</h3>
+            <div className="text-left space-y-3">
+              <div className="p-3 bg-green-50 rounded-lg">
+                <h4 className="font-semibold text-green-800">SEO Fundamentals</h4>
+                <p className="text-sm text-green-600">Understanding search engines, keywords, and basic optimization</p>
+              </div>
+              <div className="p-3 bg-green-50 rounded-lg">
+                <h4 className="font-semibold text-green-800">On-Page Optimization</h4>
+                <p className="text-sm text-green-600">Title tags, meta descriptions, headings, and content optimization</p>
+              </div>
+              <div className="p-3 bg-green-50 rounded-lg">
+                <h4 className="font-semibold text-green-800">Keyword Research</h4>
+                <p className="text-sm text-green-600">Finding the right keywords for your business and audience</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center relative">
+            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10">
+              <span className="text-2xl font-bold text-blue-600">2</span>
+            </div>
+            <h3 className="text-xl font-bold mb-4">Intermediate Level</h3>
+            <div className="text-left space-y-3">
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold text-blue-800">Technical SEO</h4>
+                <p className="text-sm text-blue-600">Site structure, crawlability, indexing, and technical optimization</p>
+              </div>
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold text-blue-800">Link Building</h4>
+                <p className="text-sm text-blue-600">Earning quality backlinks and building domain authority</p>
+              </div>
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold text-blue-800">Content Strategy</h4>
+                <p className="text-sm text-blue-600">Creating SEO-optimized content that ranks and converts</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center relative">
+            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10">
+              <span className="text-2xl font-bold text-purple-600">3</span>
+            </div>
+            <h3 className="text-xl font-bold mb-4">Advanced Level</h3>
+            <div className="text-left space-y-3">
+              <div className="p-3 bg-purple-50 rounded-lg">
+                <h4 className="font-semibold text-purple-800">Enterprise SEO</h4>
+                <p className="text-sm text-purple-600">Large-scale SEO strategies and implementation</p>
+              </div>
+              <div className="p-3 bg-purple-50 rounded-lg">
+                <h4 className="font-semibold text-purple-800">Analytics & Reporting</h4>
+                <p className="text-sm text-purple-600">Advanced tracking, measurement, and ROI analysis</p>
+              </div>
+              <div className="p-3 bg-purple-50 rounded-lg">
+                <h4 className="font-semibold text-purple-800">SEO Automation</h4>
+                <p className="text-sm text-purple-600">Tools, scripts, and processes to scale SEO efforts</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tools & Resources */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-8">
+          <div className="flex items-center mb-6">
+            <Rocket className="w-12 h-12 text-pink-600 mr-4" />
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900">Free SEO Tools</h3>
+              <p className="text-gray-600">Essential tools for website optimization</p>
+            </div>
+          </div>
+          <ul className="space-y-3 text-gray-700">
+            <li className="flex items-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+              <span>Website SEO Audit Tool</span>
+            </li>
+            <li className="flex items-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+              <span>Meta Tags Analyzer</span>
+            </li>
+            <li className="flex items-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+              <span>Headings Structure Checker</span>
+            </li>
+            <li className="flex items-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+              <span>Page Speed Analyzer</span>
+            </li>
+            <li className="flex items-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+              <span>Social Media Tags Validator</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl p-8">
+          <div className="flex items-center mb-6">
+            <Globe className="w-12 h-12 text-cyan-600 mr-4" />
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900">Industry Resources</h3>
+              <p className="text-gray-600">Stay updated with SEO industry changes</p>
+            </div>
+          </div>
+          <ul className="space-y-3 text-gray-700">
+            <li className="flex items-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+              <span>Google Algorithm Updates</span>
+            </li>
+            <li className="flex items-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+              <span>SEO Best Practices Guide</span>
+            </li>
+            <li className="flex items-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+              <span>Technical SEO Checklist</span>
+            </li>
+            <li className="flex items-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+              <span>Local SEO Optimization</span>
+            </li>
+            <li className="flex items-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+              <span>E-commerce SEO Strategies</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="text-center bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-12 text-white">
+        <h2 className="text-3xl font-bold mb-4">Start Your SEO Journey Today</h2>
+        <p className="text-xl mb-8 opacity-90">
+          Use our free SEO audit tool to identify optimization opportunities and begin improving your website's search engine performance.
+        </p>
+        <NavLink 
+          to="/" 
+          className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-bold text-lg rounded-xl hover:bg-gray-100 transition-colors"
+        >
+          Get Free SEO Audit
+          <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l7-7m0 0l-7-7m7 7H3" />
+          </svg>
+        </NavLink>
       </div>
     </div>
   </div>
@@ -400,35 +862,35 @@ const HomePage = ({
             <h3 className="text-lg font-bold mb-1 text-black">Instant SEO Reports</h3>
             <p className="text-black">Audit your website in under 30 seconds.</p>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.1s'}}>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in animate-delay-100">
             <div className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
               <svg aria-hidden="true" className="w-8 h-8 text-purple-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9" /><path d="M12 4v16m0 0H3" /></svg>
             </div>
             <h3 className="text-lg font-bold mb-1 text-black">AI-Powered Fixes</h3>
             <p className="text-black">Get smart suggestions to improve your SEO.</p>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in animate-delay-200">
             <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
               <svg aria-hidden="true" className="w-8 h-8 text-green-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 17v-6m0 0V7m0 4h4m-4 0H8" /></svg>
             </div>
             <h3 className="text-lg font-bold mb-1 text-black">PDF Reports</h3>
             <p className="text-black">Download and share detailed SEO audits.</p>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.3s'}}>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in animate-delay-300">
             <div className="bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
               <svg aria-hidden="true" className="w-8 h-8 text-orange-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4m0-4h.01" /></svg>
             </div>
             <h3 className="text-lg font-bold mb-1 text-black">No Login Needed</h3>
             <p className="text-black">Use without creating an account.</p>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.4s'}}>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in animate-delay-400">
             <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
               <svg aria-hidden="true" className="w-8 h-8 text-blue-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
             </div>
             <h3 className="text-lg font-bold mb-1 text-black">3 Free Audits Daily</h3>
             <p className="text-black">Fair usage limit to keep it free.</p>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in" style={{animationDelay: '0.5s'}}>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft p-8 flex flex-col items-start hover-lift transition-all duration-500 ease-out group animate-fade-in animate-delay-500">
             <div className="bg-gradient-to-br from-red-100 to-red-200 rounded-xl p-4 mb-6 transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-3">
               <svg aria-hidden="true" className="w-8 h-8 text-red-600 transition-all duration-500 ease-out group-hover:scale-110" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" /><path d="M12 8v4m0 4h.01" /></svg>
             </div>
@@ -443,16 +905,25 @@ const HomePage = ({
 };
 
 function App() {
-  const { isLoading, progress, report, error, analyzeWebsite: originalAnalyzeWebsite, resetReport } = useSEOAnalysis();
+  const { 
+    isLoading, 
+    progress, 
+    report, 
+    error, 
+    analyzeWebsite: originalAnalyzeWebsite, 
+    resetReport,
+    canPerformCheck,
+    getRemainingChecks 
+  } = useSEOAnalysis();
   const { user } = useAuth();
   const [activeTab] = useState('seo');
 
   const [showToast, setShowToast] = useState(false);
   const [showPDFModal, setShowPDFModal] = useState(false);
-  const [checksLeft, setChecksLeft] = useState(3);
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [showSEOAudit, setShowSEOAudit] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [lang, setLang] = useState('EN');
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -477,20 +948,28 @@ function App() {
   }, []);
 
   // Memoize the analyzeWebsite function to prevent unnecessary re-renders
-  const analyzeWebsite = useCallback((url: string) => {
-    originalAnalyzeWebsite(url);
+  const analyzeWebsite = useCallback(async (url: string) => {
+    const result = await originalAnalyzeWebsite(url);
+    
+    if (result.requiresAuth) {
+      setShowAuthModal(true);
+    }
+    
+    return result;
   }, [originalAnalyzeWebsite]);
 
   // Simulate tool action (replace with real logic)
   const handleToolAction = (tabId: string) => {
-    if (checksLeft <= 0) {
+    const remaining = getRemainingChecks();
+    if (!user && remaining <= 0) {
+      setShowAuthModal(true);
       return;
     }
     if (tabId === 'seo') {
       // This will be handled by the HomePage component now
     } else {
-      // Simulate check for other tools
-      setChecksLeft(c => c - 1);
+      // For other tools, just show coming soon modal
+      setShowComingSoon(true);
     }
   };
 
@@ -579,17 +1058,18 @@ function App() {
     <>
       <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <LayoutWrapper 
+          <LayoutWrapper
             analyzeWebsite={analyzeWebsite}
             isLoading={isLoading}
             showToast={showToast}
+            setShowToast={setShowToast}
             showPDFModal={showPDFModal}
             setShowPDFModal={setShowPDFModal}
             showComingSoon={showComingSoon}
             setShowComingSoon={setShowComingSoon}
             showSEOAudit={showSEOAudit}
             setShowSEOAudit={setShowSEOAudit}
-            checksLeft={checksLeft}
+            remainingChecks={getRemainingChecks()}
             handleToolAction={handleToolAction}
             hoveredMenu={hoveredMenu}
             setHoveredMenu={setHoveredMenu}
@@ -600,6 +1080,8 @@ function App() {
             lang={lang}
             setLang={setLang}
             user={user}
+            showAuthModal={showAuthModal}
+            setShowAuthModal={setShowAuthModal}
           />
         </Router>
       </Suspense>
@@ -609,7 +1091,7 @@ function App() {
 
 // Layout wrapper to handle conditional rendering based on route
 interface LayoutWrapperProps {
-  analyzeWebsite: (url: string) => void;
+  analyzeWebsite: (url: string) => Promise<{ success: boolean; requiresAuth: boolean }>;
   isLoading: boolean;
   showToast: boolean;
   setShowToast: (value: boolean) => void;
@@ -619,18 +1101,8 @@ interface LayoutWrapperProps {
   setShowComingSoon: (value: boolean) => void;
   showSEOAudit: boolean;
   setShowSEOAudit: (value: boolean) => void;
-  checksLeft: number;
+  remainingChecks: number;
   handleToolAction: (tool: string) => void;
-
-  showPDFModal: boolean;
-  setShowPDFModal: (show: boolean) => void;
-  showComingSoon: boolean;
-  setShowComingSoon: (show: boolean) => void;
-  showSEOAudit: boolean;
-  setShowSEOAudit: (show: boolean) => void;
-  checksLeft: number;
-  handleToolAction: (action: string) => void;
-
   hoveredMenu: string | null;
   setHoveredMenu: (menu: string | null) => void;
   mobileMenuOpen: boolean;
@@ -640,22 +1112,22 @@ interface LayoutWrapperProps {
   lang: string;
   setLang: (lang: string) => void;
   user: unknown; // Keep as unknown for now since auth context might define this
-
-  user: unknown;
-
+  showAuthModal: boolean;
+  setShowAuthModal: (value: boolean) => void;
 }
 
 function LayoutWrapper({
   analyzeWebsite,
   isLoading,
   showToast,
+  setShowToast,
   showPDFModal,
   setShowPDFModal,
   showComingSoon,
   setShowComingSoon,
   showSEOAudit,
   setShowSEOAudit,
-  checksLeft,
+  remainingChecks,
   handleToolAction,
   hoveredMenu,
   setHoveredMenu,
@@ -665,11 +1137,9 @@ function LayoutWrapper({
   setShowLangDropdown,
   lang,
   setLang,
-
   user,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ...props // This will capture setShowToast without explicitly naming it
-  user
+  showAuthModal,
+  setShowAuthModal
 }: LayoutWrapperProps) {
   const location = useLocation();
   const isHome = location.pathname === "/";
@@ -868,7 +1338,7 @@ function LayoutWrapper({
               <div className="relative group">
                 <button 
                   className="flex items-center px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 font-medium text-sm transition-all duration-300 group-hover:scale-105" 
-                  onClick={() => setShowLangDropdown((v: boolean) => !v)}
+                  onClick={() => setShowLangDropdown(!showLangDropdown)}
                 >
                   <Globe className="w-4 h-4 mr-1" />
                   {lang}
@@ -1045,11 +1515,12 @@ function LayoutWrapper({
       <Toast message="Daily limit reached. Upgrade to Pro for unlimited checks." show={showToast} />
       <PDFPremiumModal open={showPDFModal} onClose={() => setShowPDFModal(false)} />
       <ComingSoonModal open={showComingSoon} onClose={() => setShowComingSoon(false)} />
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
       <SEOAuditModal
         open={showSEOAudit}
         onClose={() => setShowSEOAudit(false)}
         isLoading={isLoading}
-        checksLeft={checksLeft}
+        remainingChecks={remainingChecks}
         handleToolAction={handleToolAction}
         showPDFModal={showPDFModal}
         setShowPDFModal={setShowPDFModal}
@@ -1065,6 +1536,12 @@ function LayoutWrapper({
           }}
         />
       )}
+
+      {/* AdSense - Only on content-rich pages */}
+      <AdSenseLoader />
+
+      {/* Authentication Modal */}
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   );
 }
