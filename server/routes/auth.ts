@@ -38,7 +38,7 @@ router.post('/google', async (req, res) => {
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
-    const timeoutPromise = new Promise((_, reject) => 
+    const timeoutPromise = new Promise<never>((_, reject) => 
       setTimeout(() => reject(new Error('Token verification timeout')), 10000)
     );
 
