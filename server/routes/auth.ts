@@ -26,15 +26,16 @@ interface UserDocument {
 // POST /api/auth/google - Verify Google token and create/login user
 router.post('/google', async (req, res) => {
   try {
-    const { token } = req.body;
+    const { token, credential } = req.body as { token?: string; credential?: string };
+    const idToken = token || credential;
 
-    if (!token) {
+    if (!idToken) {
       return res.status(400).json({ error: 'Token is required' });
     }
 
     // Verify the Google token with timeout
     const verifyPromise = client.verifyIdToken({
-      idToken: token,
+      idToken,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 

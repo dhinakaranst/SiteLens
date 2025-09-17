@@ -89,8 +89,9 @@ app.use((req, res, next) => {
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
-  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  // Remove COOP/COEP to avoid breaking OAuth popups and EventSource
+  // res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  // res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   next();
