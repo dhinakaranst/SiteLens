@@ -26,15 +26,21 @@ interface UserDocument {
 // POST /api/auth/google - Verify Google token and create/login user
 router.post('/google', async (req, res) => {
   try {
-    const { token } = req.body;
+    console.log('🔐 OAuth request received:', { hasToken: !!req.body.token, hasCredential: !!req.body.credential });
+    
+    const { token, credential } = req.body;
+    const idToken = token || credential;
 
-    if (!token) {
-      return res.status(400).json({ error: 'Token is required' });
+    if (!idToken) {
+      console.log('❌ No token or credential provided');
+      return res.status(400).json({ error: 'Token or credential is required' });
     }
 
+    console.log('🔍 Verifying token with Google...');
+    
     // Verify the Google token with timeout
     const verifyPromise = client.verifyIdToken({
-      idToken: token,
+      idToken: idToken,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
@@ -46,13 +52,17 @@ router.post('/google', async (req, res) => {
     const payload = ticket.getPayload() as GoogleTokenPayload;
 
     if (!payload) {
+      console.log('❌ Invalid token payload received');
       return res.status(400).json({ error: 'Invalid token payload' });
     }
+
+    console.log('✅ Token verified for user:', payload.email);
 
     // Check if user exists
     let user = await User.findOne({ googleId: payload.sub }) as UserDocument | null;
 
     if (!user) {
+      console.log('👤 Creating new user:', payload.email);
       // Create new user
       user = new User({
         googleId: payload.sub,
@@ -61,20 +71,32 @@ router.post('/google', async (req, res) => {
         picture: payload.picture,
       }) as UserDocument;
       await user.save();
+    } else {
+      console.log('👤 Existing user found:', payload.email);
     }
 
     // Return user data
-    res.json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      picture: user.picture,
-      createdAt: user.createdAt.toISOString(),
-    });
+    const userData = {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        picture: user.picture,
+        createdAt: user.createdAt.toISOString(),
+      }
+    };
+    
+    console.log('✅ OAuth login successful for:', user.email);
+    res.json(userData);
 
   } catch (error) {
-    console.error('Google auth error:', error);
-    res.status(500).json({ error: 'Authentication failed' });
+    console.error('❌ Google auth error:', error);
+    console.error('🔍 Error details:', {
+      message: (error as Error)?.message,
+      name: (error as Error)?.name,
+      stack: (error as Error)?.stack?.split('\n')[0]
+    });
+    res.status(500).json({ error: 'Authentication failed', details: (error as Error)?.message });
   }
 });
 
