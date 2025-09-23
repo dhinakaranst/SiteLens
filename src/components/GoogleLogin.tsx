@@ -24,12 +24,18 @@ const GoogleLoginComponent: React.FC = () => {
     setIsLoading(true);
     console.log('🚀 Starting Google OAuth login...');
     console.log('📡 API URL:', `${API_BASE_URL}/api/auth/google`);
+    console.log('🌍 Environment:', import.meta.env.MODE);
+    console.log('🔑 Has Client ID:', !!import.meta.env.VITE_GOOGLE_CLIENT_ID);
+    console.log('📦 Credential received:', !!(credentialResponse as { credential: string })?.credential);
     
     try {
       const response = await axios.post<AuthResponse>(`${API_BASE_URL}/api/auth/google`, {
         credential: (credentialResponse as { credential: string }).credential
       }, {
-        timeout: 15000 // 15 second timeout
+        timeout: 15000, // 15 second timeout
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
 
       if (response.data.user) {
@@ -43,6 +49,13 @@ const GoogleLoginComponent: React.FC = () => {
       }
     } catch (error: unknown) {
       console.error('❌ Login failed:', error);
+      console.error('🔍 Error details:', {
+        message: (error as Error)?.message,
+        code: (error as { code?: string })?.code,
+        status: (error as { response?: { status?: number } })?.response?.status,
+        data: (error as { response?: { data?: unknown } })?.response?.data
+      });
+      
       let errorMessage = 'Login failed. Please try again.';
       
       if ((error as { code?: string })?.code === 'ERR_NETWORK') {
@@ -58,7 +71,7 @@ const GoogleLoginComponent: React.FC = () => {
       }
       
       console.error('Login error:', errorMessage);
-      alert(errorMessage);
+      alert(`${errorMessage}\n\nFor debugging:\nAPI URL: ${API_BASE_URL}\nEnvironment: ${import.meta.env.MODE}`);
     } finally {
       setIsLoading(false);
     }

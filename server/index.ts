@@ -65,9 +65,12 @@ app.use(compression());
 const allowedOrigins = [
   'https://site-lens.tech',
   'https://seositelens.vercel.app',
-  'https://seositelens-ovr0l96mv-dhinakaransts-projects.vercel.app', // <--- ADD THIS LINE
+  'https://seositelens-git-main-dhinakaransts-projects.vercel.app',
+  'https://seositelens-ovr0l96mv-dhinakaransts-projects.vercel.app',
+  // Add any additional Vercel preview URLs as needed
   'http://localhost:5173',
-  'http://localhost:3000'
+  'http://localhost:3000',
+  'http://localhost:5174'
 ];
 
 app.use(cors({
