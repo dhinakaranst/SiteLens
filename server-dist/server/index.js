@@ -57,9 +57,12 @@ app.use(compression());
 const allowedOrigins = [
     'https://site-lens.tech',
     'https://seositelens.vercel.app',
-    'https://seositelens-ovr0l96mv-dhinakaransts-projects.vercel.app', // <--- ADD THIS LINE
+    'https://seositelens-git-main-dhinakaransts-projects.vercel.app',
+    'https://seositelens-ovr0l96mv-dhinakaransts-projects.vercel.app',
+    // Add any additional Vercel preview URLs as needed
     'http://localhost:5173',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'http://localhost:5174'
 ];
 app.use(cors({
     origin: function (origin, callback) {
@@ -80,8 +83,9 @@ app.use((req, res, next) => {
     if (origin && allowedOrigins.includes(origin)) {
         res.setHeader("Access-Control-Allow-Origin", origin);
     }
-    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+    // Remove COOP/COEP to avoid breaking OAuth popups and EventSource
+    // res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    // res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
     next();

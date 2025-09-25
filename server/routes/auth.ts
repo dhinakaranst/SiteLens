@@ -1,6 +1,7 @@
 import express from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User.js';
+import { sendWelcomeEmail } from '../services/emailService.js';
 
 const router = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -23,6 +24,31 @@ interface UserDocument {
   save(): Promise<UserDocument>;
 }
 
+// Development-only JWT decoder to bypass timing validation
+function decodeJWTPayload(token: string): GoogleTokenPayload | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+    
+    // Basic validation - check if it's from Google and for our client
+    if (payload.iss !== 'https://accounts.google.com' || 
+        payload.aud !== process.env.GOOGLE_CLIENT_ID) {
+      return null;
+    }
+    
+    return {
+      sub: payload.sub,
+      name: payload.name,
+      email: payload.email,
+      picture: payload.picture
+    };
+  } catch {
+    return null;
+  }
+}
+
 // POST /api/auth/google - Verify Google token and create/login user
 router.post('/google', async (req, res) => {
   try {
@@ -38,18 +64,46 @@ router.post('/google', async (req, res) => {
 
     console.log('🔍 Verifying token with Google...');
     
-    // Verify the Google token with timeout
-    const verifyPromise = client.verifyIdToken({
-      idToken: idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
+    let payload: GoogleTokenPayload | null = null;
+    
+    // Try normal verification first
+    try {
+      const verifyPromise = client.verifyIdToken({
+        idToken: idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
 
-    const timeoutPromise = new Promise<never>((_, reject) => 
-      setTimeout(() => reject(new Error('Token verification timeout')), 10000)
-    );
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Token verification timeout')), 10000)
+      );
 
-    const ticket = await Promise.race([verifyPromise, timeoutPromise]);
-    const payload = ticket.getPayload() as GoogleTokenPayload;
+      const ticket = await Promise.race([verifyPromise, timeoutPromise]);
+      payload = ticket.getPayload() as GoogleTokenPayload;
+    } catch (error) {
+      const errorMessage = (error as Error)?.message;
+      console.log('⚠️ Standard verification failed:', errorMessage);
+      console.log('🔍 Debug info:', {
+        NODE_ENV: process.env.NODE_ENV,
+        includesEarly: errorMessage?.includes('Token used too early'),
+        includesLate: errorMessage?.includes('too late')
+      });
+      
+      // In development, if timing error, use manual decoding
+      if (process.env.NODE_ENV === 'development' && 
+          (errorMessage?.includes('Token used too early') || errorMessage?.includes('too late'))) {
+        console.log('🛠️ Using development JWT decoder for timing issue...');
+        payload = decodeJWTPayload(idToken);
+        
+        if (!payload) {
+          console.log('❌ Manual JWT decode also failed');
+          throw error;
+        }
+        console.log('✅ Manual JWT decode successful for:', payload.email);
+      } else {
+        console.log('❌ Not using JWT decoder - condition not met');
+        throw error;
+      }
+    }
 
     if (!payload) {
       console.log('❌ Invalid token payload received');
