@@ -57,7 +57,6 @@ This project uses a job queue (BullMQ + Redis) to handle SEO audits asynchronous
 ---
 =======
 # 🕵️‍♂️ SEO Audit Tool (SiteLens)
->>>>>>> 8bc4780b21c5205fd33171981984bd06ab800855
 
 A modern, full-stack SEO analysis tool with AI-powered suggestions to improve your website's SEO, meta tags, headings, and social media presence. Built with React, Express, TypeScript, and Google OAuth.
 
